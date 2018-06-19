@@ -1,0 +1,10 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+#	name = 千葉裕也
+#	email = YUYA@Mac.local
+[user]
+	name = Yuya Chiba
+	email = cy.blue.9@gmail.com
+[core]
+	excludesfile = /Users/YUYA/.gitexclude

@@ -1,0 +1,7 @@
+* oh_my_zshを削除
+
+* MACOS系
+
+- iterm2のcolorも管理
+- karabinerのキーバインド
+- brewも？
