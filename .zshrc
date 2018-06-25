@@ -111,8 +111,5 @@ eval "$(pyenv init -)"
 
 export PYTHONSTARTUP=~/.pythonrc.py
 
-
 export NODE_PATH=/usr/local/lib/node:$PATH
 export PATH=/usr/local/share/npm/bin:$PATH
-
-export LD_LIBRARY_PATH=/Users/YUYA/Downloads/bundler-v0.4-source/lib:${LD_LIBRARY_PATH}

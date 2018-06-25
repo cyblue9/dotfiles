@@ -32,6 +32,8 @@ brew install gcc-arm-none-eabi
 brew install peco
 brew install imagemagick
 brew install libmysqld-dev
+brew install zsh
+brew install zplug
 
 # brew cleanup
 brew cleanup

@@ -1,0 +1,31 @@
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
+zplug "plugins/git", from:oh-my-zsh
+
+zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-autosuggestions"
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
+
+autoload -U compinit && compinit
+
+# source $ZPLUG_HOME/repos/robbyrussell/oh-my-zsh/lib/git.zsh
+source ~/dotfiles/mytheme.zsh-theme
+
+# zplug "~/dotfiles/mytheme.zsh-theme", as:theme, from:local
+# zplug "jtriley" as:theme, from:oh-my-zsh
+# zplug "sindresorhus/pure", as:theme
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load
+
+export PATH="/Users/YUYA/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sb
+in:/opt/X11/bin"

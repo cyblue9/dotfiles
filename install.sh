@@ -19,3 +19,8 @@ git submodule add https://github.com/zsh-users/zsh-syntax-highlighting.git
 ln -s ~/dotfiles/zsh-syntax-highlighting ~/dotfiles/oh-my-zsh/custom/plugins/
 
 ln -f ~/dotfiles/mytheme.zsh-theme ~/dotfiles/oh-my-zsh/custom/themes/
+
+if [ ~/dotfiles/.zshrc -nt ~/.zshrc.zwc ]; then
+  zcompile ~/.zshrc
+  mv ./.zshrc.zwc ~/
+fi
