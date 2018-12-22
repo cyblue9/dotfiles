@@ -6,5 +6,13 @@
 [user]
 	name = Yuya Chiba
 	email = cy.blue.9@gmail.com
+	signingKey = C478588E014D8481 
 [core]
 	excludesfile = /Users/YUYA/.gitexclude
+[gpg]
+	program = gpg
+[url "git@github.com:"]
+	pushInsteadOf = git://github.com/
+	pushInsteadOf = https://github.com/
+[url "git://github.com/"]
+	insteadOf = https://github.com/
