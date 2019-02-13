@@ -8,7 +8,7 @@ export ZSH=~/dotfiles/oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 
-# ZSH_THEME="robbyrussell"
+#ZSH_THEME="robbyrussell"
 #ZSH_THEME="jtriley"
 ZSH_THEME="mytheme"
 # Uncomment the following line to use case-sensitive completion.
@@ -113,3 +113,7 @@ export PYTHONSTARTUP=~/.pythonrc.py
 
 export NODE_PATH=/usr/local/lib/node:$PATH
 export PATH=/usr/local/share/npm/bin:$PATH
+
+export GOROOT=/usr/local/opt/go/libexec
+export GOPATH=$HOME
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
