@@ -1,0 +1,57 @@
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (sys:load "libs/my/synth.xtm")
+       (sys:load "libs/my/piano.xtm")
+       (sys:load "libs/my/drums.xtm"))
+
+(bind-func dsp:DSP
+  (λ (in time chan dat)
+    (+ (drums in time chan dat)
+       (synth in time chan dat)
+       (piano in time chan dat))))
+(dsp:set! dsp)
+
+(*metro* 'set-tempo 140)
+
+(define l7
+  (λ (beat ps ds)
+    ;;(if (= 0 (modulo beat 8))
+    ;;    (set! ps '((57) (57) (57 61 64))))
+    ;;(if (= 0 (modulo beat 16))
+    ;;    (set! ps '((57) (57) (57 60 64))))
+    (map (λ (p)
+           (play piano p (cosr 120 20 1/4) (car ds)))
+         (car ps))
+    (callback (*metro* (+ beat (* .5 (car ds)))) 'l7 (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(l1 (*metro* 'get-beat 4) '((57) (57) (57 60 64)) '(0.5 0.5 1))
+
+(define l2
+  (λ (beat dur)
+    ;; (if (< (random) .1)
+    ;;     (play synth
+    ;;           (pc:quantize (cosr 80 20 1/4) (pc:scale 0 'aeolian))
+    ;;           (cosr 20 10 1/4)
+    ;;           dur))
+    (if (= 0 (modulo beat 12))
+        (play synth 96 60 dur))
+    (if (= 4 (modulo beat 12))
+        (play synth 69 60 dur))
+    (if (= 6 (modulo beat 12))
+        (play synth 76 60 dur))
+    (if (= 8 (modulo beat 12))
+        (play synth 88 60 dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'l2 (+ beat dur) dur)))
+
+(l2 (*metro* 'get-beat 4) 1/16)
+
+(define l3
+  (λ (beat dur)
+    (play drums *gm-closed-hi-hat* (cosr 50 10 1/4) dur)
+    (play 1/2 drums 44 (cosr 50 10 1/4) dur)
+    (play drums *gm-kick* 90 dur)
+    (callback (*metro* (+ beat (* .5 dur))) 'l3 (+ beat dur) dur)))
+
+(l3 (*metro* 'get-beat 4) 1)

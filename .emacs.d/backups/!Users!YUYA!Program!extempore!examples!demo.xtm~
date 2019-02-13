@@ -1,0 +1,626 @@
+;; ref all harmony
+(sys:load "libs/core/instruments.xtm")
+(sys:load "libs/external/instruments_ext.xtm")
+(bind-instrument synth synth_note_c synth_fx)
+(bind-instrument fmsynth fmsynth_note_c fmsynth_fx)
+
+;;
+;; libs
+;;
+(define rev-rotate
+  (lambda (plist)
+    (append (cdr plist) (list(car plist)))))
+
+;;
+;; drums
+;;
+(bind-sampler drums sampler_note_hermite_c sampler_fx)
+(define drum-path "/Users/YUYA/Program/extempore/libs/drums/OH/")
+(set-sampler-index drums (string-append drum-path "kick2_sOH_F_1.wav") *gm-kick* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatClosed_OH_F_20.wav") *gm-closed-hi-hat* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "crash1_OH_FF_6.wav") *gm-crash* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "cowbell_FF_9.wav") *gm-cowbell* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatClosed_OH_F_20.wav") *gm-closed-hi-hat* 0 0 0 1)
+
+(define path "/Users/YUYA/OOO/")
+(string-append path "aaaaaa")
+
+
+(define drum-seq
+  (lambda (time dur)
+    (play-note (now) drums *gm-closed-hi-hat* (random 70 120) (car dur))
+    (play-note (now) drums *gm-kick* (random 105 140) (car dur))
+    ;;(play-note (now) drums *gm-crash* (random 105 160) (car dur))
+    ;;(play-note (+ (now) (/ time 2)) drums *gm-pedal-hi-hat* 40 (/ 11025 2))
+    ;;(play-note (now) drums *gm-closed-hi-hat* (random 80 100) (random (/ 11025 2) 22050))
+    ;;(play-note (+ (now) (/ time 2)) drums *gm-pedal-hi-hat* (random 80 100) (random (/ 11025 2) 22050))
+    (callback (+ (now) time) 'drum-seq (car dur) (rev-rotate dur))))
+
+(define drum-seq
+  (lambda (beat dur)
+  (play *gm-closed-hi-hat* (random 70 130) 80 dur)
+  (callback (*metro* (+ beat (* .5 dur))) 'drum-seq (+ beat dur) dur)))
+
+(drum-seq (*metro* 'get-beat 4) 1)
+
+(drum-seq 11025 (map (lambda (x) (/ x 2)) '(11025 11025 22050)))
+;;(play-note (now) drums *gm-crash* (random 105 160) 11025)
+(define drum-seq (lambda ()))
+
+;;
+;; piano
+;;
+(bind-sampler piano sampler_note_hermite_c sampler_fx)
+
+(define parse-salamander-piano
+  (lambda (file-list)
+    (map (lambda (fname)
+           (let ((result (regex:matched fname "^.*([ABCDEFG][#b]?[0-9])v([0-9]+)\.(wav|aif|aiff|ogg)$")))
+             (if (null? result)
+                 (begin (println 'Cannot 'parse 'filename: fname)
+                        #f)
+                 ;; load 4th velocity layer only
+                 (if (= (string->number (caddr result)) 4)
+                     (list fname
+                           (note-name-to-midi-number (cadr result))
+                           0
+                           0)
+                     #f))))
+         file-list)))
+
+(load-sampler piano
+              "./libs/piano/SalamanderGrandPianoV2_44.1khz16bit/44.1khz16bit"
+              0 ;; 'sound bank' index
+              parse-salamander-piano)
+
+(define piano-seq
+  (lambda (time)
+  ;;(play-note (now) piano 100 150 11025)
+  (play-note (now) piano 88 150 11025)
+  ;;(play-note (now) piano 88 150 11025)
+  (play-note (now) piano (random '(86 98 100)) 150 (random '(11025  22050)))
+  (callback (+ (now) time) 'piano-seq time)))
+
+(piano-seq 11025)
+
+(play-note (now) piano (random 40 80) 80 44100)
+
+(define piano-seq)
+;;
+;; synth
+;;
+
+(define root 52)
+(define synth-seq
+  (lambda (time plist dur)
+    ;;(set! root (random (remove root '(52 50 48))))
+    ;;(play-note (+ (now) (/ time 2)) piano root 170 dur)
+    (play-note (now) piano (car plist) 170 dur)
+    (callback (+ (now) time) 'synth-seq time (rev-rotate plist) dur)))
+
+(define synth-seq (lambda ()))
+(define synth-seq ((lambda ())
+  (play-note (now) piano 55 170 (* 44100 2))))
+
+(synth-seq 22050 '(55 55 57 59) 22050)
+
+;;
+;; base
+;;
+
+(define root 52)
+(define synth-seq
+  (lambda (time plist dur)
+  (set! root (random (remove root '(52 50 48))))
+  (play-note (+ (now) (/ dur 2)) piano root 170 dur)
+  (play-note (now) piano (car plist) 170 dur)
+    (callback (+ (now) time) 'synth-seq time (rev-rotate plist) dur)))
+
+(define synth-seq ((lambda ())
+  (play-note (now) piano 55 170 (* 44100 2))))
+
+(synth-seq 22050 '(55 55 57 59) 22050)
+
+
+
+
+;;
+;;
+;;
+
+
+(define play-seq
+  (lambda (time plst rlst)
+    (play-note time synth (car plst)
+               (+ 90 (* 25 (cos (* 0.03125 3.141592 time))))
+               (* .65 (car rlst)))
+    (callback (+ time (* .5 (car rlst))) 'play-seq (+ time (car rlst))
+              (if (null? (cdr plst))
+              (make-list-with-proc 4 (lambda (i) (random '(60 62 64 67 69 60 64 62))))
+              (cdr plst))
+              (if (null? (cdr rlst))
+              (make-list 4 (* 11025 1))
+              (cdr rlst)))))
+
+(play-seq (now) '(60 62 64 67) '(11025))
+(define play-seq (lambda ()))
+
+;;
+;; DSP
+;;
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (+ (synth in time chan dat)
+       (drums in time chan dat)
+       (piano in time chan dat)
+       (fmsynth in time chan dat))))
+(dsp:set! dsp)
+
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+
+(define root 52)
+(define drum-seq)
+
+(define left-hand
+  (lambda (beat ps ds)
+  ;;(if (= 0 (modulo beat 8))
+  ;;    (set! root (random (remove root (list 48 43)))))
+  ;;(play 1/2 piano root 190 (car ds))
+  (if (= 0 (modulo beat 8))
+      (set! root (random (remove root (list 48 43)))))
+  ;;(play 1/3 piano root 160 (car ds))
+  ;;(play 2/3 piano root 160 (car ds))
+  ;;(play piano (car ps) 120 (car ds))
+  (play-note (*metro* beat) piano (car ps) 160 (*metro* 'dur (car ds)))
+  (play 1/2 piano root 160 (car ds))
+  (callback (*metro* (+ beat (* .5 (car ds)))) 'left-hand (+ beat (car ds))
+            (rotate ps -1)
+            (rotate ds -1))))
+
+(play-note (now) piano 60 120 44100)
+(left-hand (*metro* 'get-beat 4) (map (lambda (p) (- p 12)) '(55 55 57 59)) '(1))
+(*metro* 'set-tempo 90)
+(define *metro* (make-metro 120 '(0 . 0)))
+
+
+(define scale (pc:scale 4 'aeolian))
+
+(define right-hand
+   (lambda (beat dur)
+    ;;(println (cosr (+ root 24) (cosr 5 3 1/2) 7/3))
+    (play piano
+          (pc:quantize (cosr (+ root 24) (cosr 5 3 1/2) 7/3) scale)
+          (+ 80 (cosr 80 20 7/3))
+          (* 2.0 dur))
+    (if (> (random) .6)
+        (play fmsynth
+              (pc:quantize (+ 7 (cosr (+ root 24) (cosr 5 3 1/2) 7/3)) scale)
+              (+ 10 (cosr 80 20 7/3))
+              (* .2) 0.5 5.0))
+    (callback (*metro* (+ beat (* .5 dur))) 'right-hand (+ beat dur) dur)))
+
+(right-hand (*metro* 'get-beat 4) 1/4)
+
+(define bassline
+  (lambda (beat ps ds)
+    (play fmsynth 48 60 (* (car ps) (car ds)) 1.0 0.5)
+    (callback (*metro* (+ beat (* 0.95 (car ds)))) 'bassline (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(bassline (*metro* 'get-beat 4) (list .25 .25 .6) '(3/2 1 3/2))
+
+(define kick
+  (lambda (beat dur)
+    (play drums 35 100 dur)
+    (play -1/4 drums 35 80 (* .5 dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'kick (+ beat dur) dur)))
+
+(kick (*metro* 'get-beat 4) 1/4)
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (bind-instrument synth synth_note_c synth_fx)
+       (bind-instrument fmsynth fmsynth_note_c fmsynth_fx)
+       (bind-sampler drums sampler_note_hermite_c sampler_fx)
+       (sys:load "libs/core/pc_ivl.xtm"))
+
+(bind-val fade 1.0)
+(bind-val fade 0.9)
+(bind-val fade 0.8)
+(bind-val fade 0.7)
+(bind-val fade 0.6)
+(bind-val fade 0.5)
+(bind-val fade 0.4)
+(bind-val fade 0.3)
+(bind-val fade 0.2)
+(bind-val fade 0.1)
+(bind-val fade 0.09)
+(bind-val fade 0.08)
+(bind-val fade 0.07)
+(bind-val fade 0.06)
+(bind-val fade 0.05)
+(bind-val fade 0.04)
+(bind-val fade 0.03)
+(bind-val fade 0.02)
+(bind-val fade 0.01)
+(bind-val fade 0.00)
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+     (* fade (+ (synth in time chan dat)
+        (drums in time chan dat)
+        (piano in time chan dat)
+        (fmsynth in time chan dat)))))
+(dsp:set! dsp)
+
+;; walking on cloud
+
+(*metro* 'set-tempo 90)
+(define scale '(0 4 7))
+(define offset 0)
+(define right-hand
+  (lambda (beat dur)
+    (if (= 0 (modulo beat 8))
+        (set! offset (if (= offset 0) 24 0)))
+     (if (> (random) .4)
+         (play-note (*metro* beat)
+                    fmsynth
+                   (pc:quantize (+ 0 (random '(76 80 84 88 92))) scale)
+                   ;;(pc:quantize (random '(96 100 104 108)) scale)
+                   (+ 10 (cosr 35 20 7/3))
+                   (*metro* 'dur (random '(.25)) 0.3 8.0)))
+    (play-note (*metro* beat)
+               fmsynth
+               ;;(pc:quantize (cosr (+ root 36) (cosr 5 3 1/2) 7/3) '(11 6 15))
+               (pc:quantize (random '(48 54 60 66 72)) scale)
+               (+ 15 (cosr 45 20 7/3))
+               (*metro* 'dur (* (random '(0.5 1.0 1.5 2.0)) dur)))
+               ;;(* 2.0 dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'right-hand (+ beat dur) dur)))
+
+(right-hand (*metro* 'get-beat 4) 1/4)
+
+(pc:quantize 72 '(0 4 7 11))
+
+(define left-hand2
+  (lambda (beat ps ds)
+    (map (lambda (p) (play-note (*metro* beat)
+                 piano
+                 p
+                 150
+                 (*metro* 'dur (car ds))))
+             (car ps))
+    (callback (*metro* (+ beat (* .5 (car ds)))) 'left-hand2 (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(left-hand2 (*metro* 'get-beat 4) b-loop '(1))
+
+(play-note (now) fmsynth 100 90 (* 3 44100) .1 .1)
+
+構成音は「レ」「ソ」「ド」。
+
+構成音は「ド」「ミ」「ソ」「レ」。
+Cの明るさ・安定感とGの広がりを併せ
+
+(map (lambda (p)
+       (play-note (now) fmsynth p 80 (* 3 44100)))
+     '(48 52 55 62))
+
+(define b-loop
+  (list (list 48 52 55 62)
+        (list 48 52 55)
+        (list 55 69 62)))
+
+(define b-loop
+  (list (pc:make-chord 48 60 2 '(0 4 7))
+        (pc:make-chord 48 60 2 '(0 4 7))
+        (pc:make-chord 48 60 2 '(0 4 7))
+        (pc:make-chord 48 60 2 '(0 4 7))))
+
+
+(define left-hand
+  (lambda (beat dur)
+    (let ((d (* .5 dur)))
+      (play fmsynth
+      (pc:quantize (random '(57 52)) '(0 4 7))
+      ;;(random '(48 52 55 57))
+      ;;(pc:quantize 48 '(0 4 7))
+      (if (= 0 (modulo beat 2)) 80 70)
+      d)
+      (callback (*metro* (+ beat (* .5 d))) 'left-hand (+ beat dur) dur))))
+
+(left-hand (*metro* 'get-beat 4) 1/2)
+(pc:scale 0 'ionian)
+
+(define hats
+  (lambda (beat dur)
+    (if (= 0 (modulo beat 8))
+        (play-note (*metro* beat) drums 49 65 (*metro* 'dur 70)))
+    (play-note (*metro* beat) drums (random '(42 44)) (+ 0 (cosr 30 50 (random '(7/3 5/2)))) (*metro* 'dur dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'hats (+ beat dur) dur)))
+
+(hats (*metro* 'get-beat 4) 1/4)
+
+(define kick
+  (lambda (beat dur)
+    (play-note (*metro* beat) drums 35 80 (*metro* 'dur dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'kick (+ beat dur) dur)))
+
+(kick (*metro* 'get-beat 4) 1/2)
+
+(define bassline
+  (lambda (beat ps ds)
+    (play fmsynth 48 60 (* (car ps) (car ds)) 1.0 0.5)
+    (callback (*metro* (+ beat (* 0.95 (car ds)))) 'bassline (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(bassline (*metro* 'get-beat 4) (list .25 .25 .6) '(3/2 1 3/2))
+
+
+(*metro* 'dur 70)
+
+
+
+(play-note (now) fmsynth 115 120 (* 5 44100))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(define hoge
+  (lambda (p-list d-list)
+    (play-note (now) piano (- (car p-list) 0) 180 (* 44100 (car d-list)))
+    (callback (+ (now) (* 44100 .5 (car d-list))) 'hoge (cdr p-list) (cdr d-list))))
+
+(hoge (list 60 60 60 0 60 64 67 60) (list 1 1 2 0 1.5 0.5 0.5 1.5))
+
+
+(for-each
+ (lambda (p)
+   (play-note (now) fmsynth (car p) 80 (cdr p)))
+ '((60 0.25) (60 0.25) (60 0.25) (0 0) (60 0.35) (64 0.15) (67 0.15) (60 0.35)))
+
+
+
+(play-note (now) piano 44 180 (* 8 44100))
+(piano.attack (* 10. *second*))
+(piano.decay 400.0)
+(piano.release 400.0)
+(piano.sustain 1.0)
+
+(define drum-seq
+  (lambda (time dur)
+    (let ((d (/ dur 1)))
+      (if (= 0 (modulo time 8))
+          (play-note drums *gm-open-hi-hat* 160 d))
+      (play-note time drums *gm-kick* 140 d)
+      (play-note (+ time (/ d 2)) drums *gm-kick* 70 d)
+      (callback (+ time (* .5 dur)) 'drum-seq (+ time d) 11250))))
+
+(drum-seq (now) 11250)
+
+
+(define hats)
+  (lambda (beat dur)
+    (if (= 0 (modulo beat 8))
+        (play drums *gm-open-hi-hat* 100 140 dur))
+    (play drums (random '(44 42)) (cosr 70 90 (random '(7/3 5/2))) dur)
+    (callback (*metro* (+ beat (* .5 dur))) 'hats (+ beat dur) dur)))
+
+(hats (*metro* 'get-beat 4) 1/4)
+
+(play-note (now) piano 96 120 1.0)
+
+(drum-loop (now) 0.5)
+
+(let ((beat 100))
+  (cosr 75 90 (random '(7/3 5/2))))
+
+(pc:quantize (cosr (+ root 36) (cosr 5 3 1/2) 7/3) '(11 6 15))
+(pc:quantize 60 '(7))
+(pc:? 60 '(6 8 9 11))
+(round 13.5)
+(cosr 5 3 1/2)
+
+(*metro* 'get-beat 4)
+(now)
+(*metro* 1 1)
+
+;;
+;; drums
+;;
+(bind-sampler drums sampler_note_hermite_c sampler_fx)
+(define drum-path "/Users/YUYA/Documents/programing/extempore/libs/drums/OH/")
+(set-sampler-index drums (string-append drum-path "kick_OH_F_9.wav") *gm-kick* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "snareStick_OH_F_9.wav") *gm-side-stick* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "snare_OH_FF_9.wav") *gm-snare* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatClosed_OH_F_20.wav") *gm-closed-hi-hat* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatFoot_OH_MP_12.wav") *gm-pedal-hi-hat* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatOpen_OH_FF_6.wav") *gm-open-hi-hat* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "loTom_OH_FF_8.wav") *gm-low-floor-tom* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hiTom_OH_FF_9.wav") *gm-hi-floor-tom* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "crash1_OH_FF_6.wav") *gm-crash* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "ride1_OH_FF_4.wav") *gm-ride* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "china1_OH_FF_8.wav") *gm-chinese* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "cowbell_FF_9.wav") *gm-cowbell* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "bellchime_F_3.wav") *gm-open-triangle* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "ride1Bell_OH_F_6.wav") *gm-ride-bell* 0 0 0 1)
+
+(define drum-seq
+  (lambda (time dur)
+    (play-note (now) drums *gm-closed-hi-hat* (random 90 140) (car dur))
+    (play-note (now) drums *gm-kick* (random 105 140) (car dur))
+    (callback (+ (now) time) 'drum-seq (car dur) (rotate dur -1))))
+
+(drum-seq 11025 (map (lambda (x) (/ x 2)) '(11025 11025 22050)))
+
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+(define left-hand
+  (lambda (beat ps ds)
+  (if (= 0 (modulo beat 8))
+      (set! root (random (remove root (list 48 50 52)))))
+  (play 1/2 piano root 190 (car ds))
+  (play piano (car ps) 190 (car ds))
+  (callback (*metro* (+ beat (* .5 (car ds)))) 'left-hand (+ beat (car ds))
+            (rev-rotate ps)
+            (rev-rotate ds))))
+
+
+;;
+;;
+;
+;;
+;
+;
+;
+;
+(define drum-loop
+   (lambda (time dur)
+      (play-note time drums *gm-cowbell* 80 dur)
+      (callback (+ time (* .5 dur)) 'drum-loop (+ time dur) (random '(22050 11025)))))
+
+(define drum-loop)
+        (lambda (time dur)
+          (let ((d (* dur (+ .5 (* .25 (cos (* 16 3.141592 time)))) *samplerate*)))
+            (play-note time drums *gm-cowbell* 80 d)
+            (callback (+ time (* .5 d)) 'drum-loop (+ time d)
+                      (random (list 0.5))))))
+
+(define drum-loop)
+  (lambda (time dur)
+    (play-note time drums *gm-closed-hi-hat* 100 dur)
+    (play-note (+ time 22025) drums *gm-crash* 25 dur)
+    (callback (+ time dur) 'drum-loop (+ time dur) dur)))
+
+(drums (now) 22050)
+
+(cos 90)
+
+(drum-loop (now) 0.5)
+
+(define *metro* (make-metro 60))
+
+(define drum-loop
+  (lambda (time duration)
+    (println (*metro* time) (*metro* 'dur duration))
+    ;;(println time duration)
+    (play time drums *gm-cowbell* 80 1)
+    ;;(play-note (*metro* time) drums *gm-cowbell* 80 (*metro* 'dur duration))
+    (callback (*metro* (+ time (* .5 duration))) 'drum-loop (+ time duration)
+              (random (list 1)))))
+
+              ;; beat loop with tempo shift
+(define drum-loop)
+        (lambda (time duration)
+            (*metro* 'set-tempo (+ 120 (* 40 (cos (* .25 3.141592 time)))))
+            (play-note (*metro* time) drums *gm-cowbell* 80 (*metro* 'dur duration))
+            (callback (*metro* (+ time (* .5 duration))) 'drum-loop (+ time duration)
+                      (random (list 0.5)))))
+
+(drum-loop (*metro* 'get-beat) 0.25)
+
+(*metro* 'get-beat)
+
+(*metro* 3)
+
+
+(define *metro* (make-metro 120))
+
+(define drum-loop
+  (lambda (time duration pitch)
+    (play-note (*metro* time) drums pitch 80 (*metro* 'dur duration))
+    (callback (*metro* (+ time (* .5 duration))) 'drum-loop (+ time duration)
+              duration
+              pitch)))
+
+(define tempo-shift
+  (lambda (time)
+    (*metro* 'set-tempo (+ 120 (* 40 (cos (* .25 3.121592 time)))))
+    (callback (*metro* (+ time .2)) 'tempo-shift (+ time .25))))
+
+(drum-loop (*metro* 'get-beat 4) 0.5 *gm-cowbell*)
+(drum-loop (*metro* 'get-beat 4.25) 0.5 *gm-open-triangle*)
+ (tempo-shift (*metro* 'get-beat 1.0))
+
+(define *metro* (make-metro 90))
+(define *metre* (make-metre '(4 3) 0.5))
+
+(define metre-test)
+  (lambda (time)
+    (if (*metre* time 1.0)
+      (play-note (*metro* time) drums *gm-side-stick* 80 10000))
+    (callback (*metro* (+ time 0.4)) 'metre-test (+ time 0.5))))
+
+(metre-test (*metro* 'get-beat 1.0))
+
+(define *metro* (make-metro 180))
+(define *metre1* (make-metre '(3) .5))
+(define *metre2* (make-metre '(2) .5))
+
+(define metre-test
+  (lambda (time)
+    (if (*metre1* time 1.0)
+        (play-note (*metro* time) drums *gm-side-stick* 80 10000))
+    (if (*metre2* time 1.0)
+        (play-note (*metro* time) drums *gm-snare* 60 10000))
+    (callback (*metro* (+ time 0.4)) 'metre-test (+ time 0.5))))
+
+(metre-test (*metro* 'get-beat 1.0))
+
+;;
+;;
+;;
+;;
+;;
+(define *metro* (make-metro 140))
+
+(define *metre1* (make-metre '(2 3 4 3 2) .5))
+(define *metre2* (make-metre '(3 5 7 5 3) .5))
+
+;; play first beat of each 'bar'
+(define metre-test)
+  (lambda (time)
+    (play-note (*metro* time) drums
+               (random (cons .8 *gm-closed-hi-hat*) (cons .2 *gm-open-hi-hat*))
+               (+ 40 (* 20 (cos (* 2 3.441592 time))))
+               (random (cons .8 500)  (cons .2 2000)))
+    (if (*metre1* time 1.0)
+        (begin (play-note (*metro* time) drums *gm-snare* 80 10000)
+               (play-note (*metro* time) drums *gm-pedal-hi-hat* 80 100000)))
+    (if (*metre2* time 1.0)
+        (begin (play-note (*metro* time) drums *gm-kick* 80 100000)
+               (play-note (*metro* time) drums *gm-ride-bell* 100 100000)))
+    (callback (*metro* (+ time 0.2)) 'metre-test (+ time 0.25))))
+
+(metre-test (*metro* 'get-beat 1.0))

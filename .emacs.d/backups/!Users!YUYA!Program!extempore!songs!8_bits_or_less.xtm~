@@ -1,0 +1,118 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://vimeo.com/62405521
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(sys:load "libs/core/instruments.xtm")
+(sys:load "libs/external/instruments_ext.xtm")
+(bind-instrument synth synth_note_c synth_fx)
+(bind-instrument fmsynth fmsynth_note_c fmsynth_fx)
+
+(bind-instrument synth synth_note_c synth_fx)
+(synth_note_c)
+
+(bind-func dsp
+  (lambda (in time chan dat)
+    (+ (chipsquare in time chan dat)
+       (chipnoise  in time chan dat))))
+
+(dsp:set! dsp)
+
+(define bleeps
+  (lambda (beat dur)
+    (if (< (random) 0.1)
+        (play chipsquare (random 60 90) 80 dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'bleeps (+ beat dur) dur)))
+
+(bleeps (*metro* 'get-beat 4) 1/4)
+
+(bind-func chipsquare_note_c
+  (lambda (data:NoteInitData* nargs:i64 dargs:float*)
+    (let ((squarel (square_c 0.0))
+          (squarer (square_c 0.0))
+          (lfol    (osc_c    0.0))
+          (lfor    (osc_c    0.0))
+          (lfofreq (if (> nargs 0) (pref dargs 0) 10.0)))
+      (lambda (time:i64 chan:i64 freq:float amp:float)
+        (cond ((= chan 0)
+               (squarel amp
+                        (let ((varl (+ 1.5 (lfol 0.5 lfofreq))))
+                          (* freq (- varl (% varl 0.5))))))
+              ((= chan 0)
+               (squarer amp
+                        (let ((varr (+ 1.5 (lfor 0.5 lfofreq))))
+                          (* freq (- varr (% varr 0.5))))))
+              (else 0.0))))))
+
+(bind-func chipsquare_fx
+  (lambda (in:float time:i64 chan:i64 dat:float*)
+    in))
+
+(define-instrument chipsquare chipsquare_note_c chipsquare_fx)
+
+(chipsquare.attack 200.0)
+(chipsquare.decay  200.0)
+(chipsquare.release 100.0)
+(chipsquare.sustain 0.6)
+
+(define l2
+  (lambda (beat dur pitch)
+    (play chipsquare pitch 80 dur 1000)
+    (callback (*metro* (+ beat (* .5 dur))) 'l2 (+ beat dur) dur
+              (if (> pitch 48)
+                  (pc:relative pitch -1 (pc:scale 0 'ionian))
+                  60))))
+
+(l2 (*metro* 'get-beat 4) 1 60)
+(l2 (*metro* 'get-beat 4) 1/3 67)
+
+(define chipdrums
+  (lambda (beat dur)
+    (if (= (modulo beat 2) 0)
+        (play chipsquare 30 110 dur))
+    (if (= (modulo beat 2) 1)
+        (play chipnoise 110 (cosr 120 10 1/2) dur))
+    (if (< (modulo beat 8) 4)
+        (play chipnoise (cosr 90 40 1/2) (cosr 80 10 1/2) dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'chipdrums (+ beat dur) dur)))
+
+(chipdrums (*metro* 'get-beat 4) 1/4)
+
+(bind-func chipnoise_note_c
+  (lambda (data:NoteInitData* nargs:i64 dargs:float*)
+    (let ((bpfl (bpf_c))
+          (bpfr (bpf_c)))
+      (lambda (time:i64 chan:i64 freq:float amp:float)
+        (cond ((= chan 0)
+               (bpfl (* amp (random)) freq 0.5))
+              ((= chan 1)
+               (bpfr (* amp (random)) freq 0.5))
+              (else 0.0))))))
+
+(bind-func chipnoise_fx
+  (lambda (in:float time:i64 chan:i64 dat:float*)
+    in))
+
+(define-instrument chipnoise chipnoise_note_c chipnoise_fx)
+
+(chipnoise.attack 0.0)
+(chipnoise.decay 0.0)
+(chipnoise.release 0.0)
+(chipnoise.sustain 0.6)
+
+(define l3
+  (lambda (beat dur idx)
+    (let ((chord (pc:make-chord 50 80 4 (pc:chord
+                                                  (if (< (modulo beat 8) 4) 0 4)
+                                                  '^))))
+      (for-each (lambda (p)
+                  (play chipsquare p (cosr 90 20 1/4) dur 600))
+                (if (= idx 0)
+                    (cl:butnthcdr 1 chord)
+                    (cl:nthcdr 1 chord))))
+    (callback (*metro* (+ beat (* .5 dur))) 'l3 (+ beat dur) dur
+              (if (< idx 2) (+ idx 1) 0))))
+

@@ -1,0 +1,151 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("/Users/YUYA/Desktop/" . "extempore-build/")
+ ("/Users/YUYA/Desktop/extempore-build/examples/" . "external/")
+ ("/Users/YUYA/Desktop/extempore-build/libs/" . "contrib/")
+ ("/Users/YUYA/Desktop/extempore-build/" . "examples/")
+ ("/Users/YUYA/Program/extempore-graphic-hacks/" . "DAY4/")
+ ("/Users/YUYA/Program/extempore/examples/external/" . "shader-tutorials/")
+ ("/Users/YUYA/Program/extempore/libs/" . "contrib/")
+ ("/Users/YUYA/Program/extempore/examples/" . "core/")
+ ("/Users/YUYA/Program/extempore-build/examples/" . "core/")
+ ("/Users/YUYA/Program/extempore/" . "libs/")
+ ("/Users/YUYA/" . "Desktop/")
+ ("/Users/" . "YUYA/")
+ ("/Users/YUYA/Program/my-extempore/examples/" . "core/")
+ ("/" . "Users/")
+ ("/Users/YUYA/Program/my-extempore/" . "examples/")
+ ("/Users/YUYA/Program/" . "extempore-graphic-hacks/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/Users/YUYA/Program/extempore/libs/contrib/"
+ "/Users/YUYA/Program/extempore-graphic-hacks/DAY4/"
+ "/Users/YUYA/Program/extempore/libs/external/"
+ "/Users/YUYA/Desktop/extempore-build/examples/external/"
+ "/Users/YUYA/Program/extempore-graphic-hacks/DAY3/"
+ "/Users/YUYA/Desktop/extempore-build/libs/external/"
+ "/Users/YUYA/Desktop/extempore-build/examples/core/"
+ "/Users/YUYA/Program/extempore/examples/core/"
+ "/Users/YUYA/Program/extempore/examples/external/"
+ "/Users/YUYA/Program/extempore-graphic-hacks/DAY1/"
+ "/Users/YUYA/Program/extempore-graphic-hacks/DAY2/"
+ "/Users/YUYA/Program/extempore/songs/"
+ "/Users/YUYA/Program/extempore-graphic-hacks/"
+ "/Users/YUYA/Program/extempore/libs/my/"
+ "/Users/YUYA/Program/extempore/libs/core/"
+ "/Users/YUYA/Program/extempore/examples/external/shader-tutorials/"
+ "/Users/YUYA/Program/extempore/examples/"
+ "/Users/YUYA/Program/extempore/examples/contrib/"
+ "/Users/YUYA/Program/extempore-build/examples/core/"
+ "/Users/YUYA/Program/extempore/"
+ "/Users/YUYA/"
+ "/Users/YUYA/Program/extempore-build/examples/"
+ "/Users/YUYA/Program/my-extempore/examples/core/"
+ "/Users/YUYA/Program/my-extempore/examples/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "nanovg_helper.xtm"
+ "day4.xtm"
+ "nanovg.xtm"
+ "openvg.xtm"
+ "day3.xtm"
+ "extempore_lang.xtm"
+ "spectrogram.xtm"
+ "day1.xtm"
+ "day3.mov"
+ "day2.xtm"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/Users/YUYA/Program/extempore/libs/contrib/" (23648 20532 0 0) "win32.xtm" "TSM_library.xtm" "tensorflow.xtm" "svm.xtm" "stream.xtm" "sampler-maps.xtm" "rtmidi.xtm" "rtmidi-scm.xtm" "openvg.xtm" "nuklear.xtm" "nanovg_helper.xtm" "mpi.xtm" "lilv.xtm" "librs232.xtm" "libfreenect.xtm" "libclang.xtm" "libchipmunk.xtm" "libchipmunk/" "kinect2.xtm" "kinect.xtm" "gsl.xtm" "gmp.xtm" "game-of-life.xtm" "fitslib.xtm" "fits.xtm" "drawtext.xtm" "cas.xtm" "cairo.xtm" "aot-compilation.xtm" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-graphic-hacks/DAY4/" (23649 15562 0 0) "day4.xtm" ".DS_Store" ".#day4.xtm" "#day4.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/libs/external/" (23645 17054 0 0) "udis86.xtm" "system.xtm" "stb_image.xtm" "sqlite.xtm" "soil.xtm" "sndfile.xtm" "qr-code.xtm" "portmidi.xtm" "portaudio.xtm" "particles_vbo.xtm" "particles.xtm" "opengl.xtm" "opencv.xtm" "opencl.xtm" "nanovg.xtm" "nanomsg.xtm" "midi.xtm" "libulfius.xtm" "libc.xtm" "jansson.xtm" "instruments_ext.xtm" "instruments_ext-scm.xtm" "horde3d.xtm" "hidapi.xtm" "hid.xtm" "gui.xtm" "gstreamer.xtm" "graphics-pipeline.xtm" "graphics-pipeline-scm.xtm" "glib.xtm" "glfw3.xtm" "glext.xtm" "glcompat.xtm" "gl.xtm" "gl/" "ghttp.xtm" "fluid2d.xtm" "fleet.xtm" "fleet-node.xtm" "fft.xtm" "datavis.xtm" "curl.xtm" "ceph.xtm" "cef/" "bullet.xtm" "audio_dsp_ext.xtm" "assimp.xtm" "apr.xtm" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/libs/" (23646 57460 0 0) "platform-shlibs/" "external/" "core/" "contrib/" "base/" "aot-cache/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/" (23647 55023 0 0) "Wine Files/" "Sites/" "revoke.asc" "Public/" "Program/" "Pictures/" "package-lock.json" "node_modules/" "Music/" "Movies/" "Library/" "hoge" "HariboteOS/" "go/" "github/" "enhancd/" "Downloads/" "downloaded_settings.py" "dotfiles/" "Documents/" "Desktop/" "Applications/" "algolia.txt.asc" ".zshrc.pre-oh-my-zsh" ".zshrc.omz-uninstalled-20171218174636" ".zshrc" ".zsh_history" ".zplug/" ".zcompdump-Mac-5.6" ".zcompdump-Mac-5.5.1" ".zcompdump-Mac-5.4.2" ".zcompdump-Mac-5.2" ".zcompdump-Mac-5.0.8" ".zcompdump" ".yarnrc" ".xonsh_man_completions" ".xonsh_history.json" ".Xauthority" ".VSCodeVim/" ".vscode/" ".vimrc" ".viminfo" ".vim/" ".v8flags.6.7.288.46-node.8.ee721ff7a860bc1bfaf3d210e6cd800d.json" ".v8flags.6.7.288.45-node.7.ee721ff7a860bc1bfaf3d210e6cd800d.json" ".Trash/" ".tox/" ".thumbnails/" ".swp" ".swo" ".swn" ".swm" ".swl" ".swk" ".swj" ".swi" ".swh" ".swg" ".swf" ".subversion/" ".ssh/" ".slime-history.eld" ".slime/" ".rnd" ".rbenv/" ".pythonrc.py" ".pythonhistory" ".python_history" ".pyenv/" ".pwntools-cache/" ".oracle_jre_usage/" ".npm/" ".node_repl_history" ".node-gyp/" ".mplayer/" ".mono/" ".matplotlib/" ".local/" ".lldb/" ".lesshst" ".ipython/" ".haxornewshistory" ".haxornewsconfig" ".gnupg/" ".gitsomeconfigurl" ".githubtrendinghistory" ".githubtrendingconfig" ".gitexclude" ".gitconfig" ".gitbook/" ".gem/" ".gdbinit" ".enhancd/" ".emacs~" ".emacs.d/" ".emacs" ".electron/" ".DS_Store" ".cups/" ".config/" ".CFUserTextEncoding" ".cache/" ".BurpSuite/" ".bundle/" ".bitnami/" ".bashrc" ".bash_sessions/" ".bash_profile" ".bash_history" ".atom/" "../" "./")
+
+ ("/Users/YUYA/Program/" (23647 7051 0 0) "wma2mp3/" "wavcue2mp3/" "vue.js-tutorial/" "seti-black-ui/" "raspi/" "protobuf/" "nanovg/" "master_research/" "In_that_book_mercari(github)/" "In_that_book_mercari/" "hoge/" "highlightjs-xtlang/" "highlight.js/" "haxor-news/" "gitsome/" "github-trending-api/" "github-trending/" "git-flight-rules/" "extemporelang.github.io/" "extempore-graphic-hacks/" "extempore-build(old-build)/" "extempore-0.7.0/" "extempore/" "dad-jokes/" "cyblue9.github.io/" "blue9s-extempore-songs/" "bibi/" "asm_project/" "asm-space-invaders/" "army-src/" "Archive/" "aot-cache/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/" (23646 57460 0 0) "tests/" "src/" "runtime/" "README.md" "llvm/" "libs/" "INSTALL.md" "include/" "extras/" "examples/" "docker/" "compile-stdlib.sh" "CMakeLists.txt" "cmake-build/" "CHANGELOG" "appveyor.yml" ".travis.yml" ".gitignore" ".git/" ".DS_Store" ".dir-locals.el" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/cmake-build/" (23647 49771 0 0) "Testing/" "stb_image/" "portmidi/" "nanovg/" "Makefile" "llvm/" "libsndfile/" "libportaudio.a" "libpcre.a" "kiss_fft/" "install_manifest.txt" "glfw3/" "extempore" "deps-install/" "DartConfiguration.tcl" "CTestTestfile.cmake" "CPackSourceConfig.cmake" "CPackConfig.cmake" "CMakeFiles/" "CMakeCache.txt" "cmake_install.cmake" "assimp/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Desktop/" (23644 40322 0 0) "進捗発表_千葉.pptx" "進捗発表_千葉(12月).pptx" "計算機アーキテクチャ特論レポート.docx" "本稿-utf8/" "修論予稿.pdf" "修論(master)/" "修論/" "~$機アーキテクチャ特論レポート.docx" "result図/" "programs/" "p-Matching/" "openvg.xtm" "netweb/" "my-KKNreport4/" "KKNreport4/" "haxor-news/" "extempore-build/" "army-src/" "army-init/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-build/cmake-build/" (23644 17468 0 0) "Testing/" "stb_image/" "portmidi/" "nanovg/" "Makefile" "llvm/" "libsndfile/" "libportaudio.a" "libpcre.a" "kiss_fft/" "install_manifest.txt" "glfw3/" "extempore" "deps-install/" "DartConfiguration.tcl" "CTestTestfile.cmake" "CPackSourceConfig.cmake" "CPackConfig.cmake" "CMakeFiles/" "CMakeCache.txt" "cmake_install.cmake" "assimp/" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-build/" (23644 16385 0 0) "tests/" "src/" "runtime/" "README.md" "llvm/" "libs/" "INSTALL.md" "include/" "extras/" "examples/" "docker/" "compile-stdlib.sh" "CMakeLists.txt" "cmake-build/" "CHANGELOG" "appveyor.yml" ".travis.yml" ".gitignore" ".git/" ".dir-locals.el" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/examples/external/" (23644 14585 0 0) "xtmrender6.xtm" "xtmrender5.xtm" "xtmrender4.xtm" "xtmrender3.xtm" "xtmrender2.xtm" "xtmrender1.xtm" "ulfius.xtm" "sqlite.xtm" "spectrogram.xtm" "sing_a_song.xtm" "shader-tutorials/" "sampler.xtm" "raymarcher.xtm" "portmidi.xtm" "portmidi-output.xtm" "openvg.xtm" "gui.xtm" "granulator.xtm" "going-native.xtm" "gl-compatibility.xtm" "electrofunk.xtm" "convolution_reverb.xtm" "audio_player.xtm" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/libs/contrib/" (23644 14585 0 0) "win32.xtm" "TSM_library.xtm" "tensorflow.xtm" "svm.xtm" "stream.xtm" "sampler-maps.xtm" "rtmidi.xtm" "rtmidi-scm.xtm" "openvg.xtm" "nuklear.xtm" "mpi.xtm" "lilv.xtm" "librs232.xtm" "libfreenect.xtm" "libclang.xtm" "libchipmunk.xtm" "libchipmunk/" "kinect2.xtm" "kinect.xtm" "gsl.xtm" "gmp.xtm" "game-of-life.xtm" "fitslib.xtm" "fits.xtm" "drawtext.xtm" "cas.xtm" "cairo.xtm" "aot-compilation.xtm" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/libs/core/" (23644 14585 0 0) "xthread.xtm" "xobject.xtm" "vu_meter.xtm" "vaudio_dsp.xtm" "toplap_clock.xtm" "topclock.xtm" "test.xtm" "scheduler.xtm" "rational.xtm" "pcg-rng.xtm" "pc_ivl.xtm" "music.xtm" "math_ext.xtm" "math.xtm" "looper.xtm" "instruments.xtm" "instruments-scm.xtm" "instruments/" "bleptables.xtm" "audiobuffer.xtm" "audio_dsp.xtm" "adt.xtm" "../" "./")
+
+ ("/Users/YUYA/dotfiles/" (23582 21656 0 0) "zzz" "zsh-syntax-highlighting/" "zsh-completions/" "zsh-autosuggestions/" "TODO.txt" "oh-my-zsh/" "mytheme.zsh-theme" "install.sh" "etc/" "bin/" ".zshrc" ".vimrc" ".vim/" ".gitmodules" ".gitexclude" ".gitconfig" ".git/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-graphic-hacks/DAY3/" (23644 20587 0 0) "day3.xtm" "day3.mov" ".DS_Store" ".#day3.xtm" "#day3.xtm#" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/examples/core/" (23644 14585 0 0) "xthread.xtm" "typeclasses.xtm" "topclock_metro.xtm" "synth.xtm" "scheduler.xtm" "petri-net.xtm" "osc_101.xtm" "nbody_lang_shootout.xtm" "mtaudio.xtm" "midi_synth.xtm" "fmsynth.xtm" "fasta_lang_shootout.xtm" "extempore_lang.xtm" "expr_problem.xtm" "covers.xtm" "audio_streams.xtm" "audio_101.xtm" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/examples/contrib/" (23644 14585 0 0) "word_count.xtm" "TSM_example.xtm" "svm.xtm" "spectral_meter.xtm" "slideshow.xtm" "shadowmap.xtm" "shaderlight.xtm" "rtmidi.xtm" "qr-code.xtm" "portaudio.xtm" "polysynth.xtm" "pic/" "particles.xtm" "opencl.xtm" "nuklear.xtm" "nanomsg.xtm" "nanomsg-surveyor.xtm" "nanomsg-respondent.xtm" "nanomsg-request.xtm" "nanomsg-reply.xtm" "multilight.xtm" "mpi/" "mediaplayer.xtm" "lv2.xtm" "librs232.xtm" "kinect_vg.xtm" "kinect_fire.xtm" "kinect.xtm" "horde3d_knight.xtm" "hidapi.xtm" "hid.xtm" "gstvideo_multi.xtm" "gstvideo.xtm" "gmp.xtm" "ghttp.xtm" "game-of-life.xtm" "game-of-life.vert" "game-of-life.frag" "fluids_2d.xtm" "fluid_dynamics.xtm" "fleet.xtm" "extempore-fortran/" "drawtext.xtm" "drawing.xtm" "datavis.xtm" "curl.xtm" "convolution.xtm" "chipmunk-simple.xtm" "ceph.xtm" "cas.xtm" "caas-example.xtm" "bullet.xtm" "algebraic_data_types.xtm" "80211.xtm" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/examples/" (23644 14585 0 0) "sharedsystem/" "external/" "core/" "contrib/" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/libs/external/" (23644 14585 0 0) "udis86.xtm" "system.xtm" "stb_image.xtm" "sqlite.xtm" "soil.xtm" "sndfile.xtm" "qr-code.xtm" "portmidi.xtm" "portaudio.xtm" "particles_vbo.xtm" "particles.xtm" "opengl.xtm" "opencv.xtm" "opencl.xtm" "nanovg.xtm" "nanomsg.xtm" "midi.xtm" "libulfius.xtm" "libc.xtm" "jansson.xtm" "instruments_ext.xtm" "instruments_ext-scm.xtm" "horde3d.xtm" "hidapi.xtm" "hid.xtm" "gui.xtm" "gstreamer.xtm" "graphics-pipeline.xtm" "graphics-pipeline-scm.xtm" "glib.xtm" "glfw3.xtm" "glext.xtm" "glcompat.xtm" "gl.xtm" "gl/" "ghttp.xtm" "fluid2d.xtm" "fleet.xtm" "fleet-node.xtm" "fft.xtm" "datavis.xtm" "curl.xtm" "ceph.xtm" "cef/" "bullet.xtm" "audio_dsp_ext.xtm" "assimp.xtm" "apr.xtm" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/libs/" (23644 16681 0 0) "platform-shlibs/" "external/" "core/" "contrib/" "base/" "aot-cache/" "../" "./")
+
+ ("/Users/YUYA/Desktop/extempore-build/" (23644 16385 0 0) "tests/" "src/" "runtime/" "README.md" "llvm/" "libs/" "INSTALL.md" "include/" "extras/" "examples/" "docker/" "compile-stdlib.sh" "CMakeLists.txt" "cmake-build/" "CHANGELOG" "appveyor.yml" ".travis.yml" ".gitignore" ".git/" ".dir-locals.el" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/examples/external/" (23631 10166 0 0) "xtmrender4.xtm" "xtmrender3.xtm" "xtmrender2.xtm" "xtmrender1.xtm" "spectrogram.xtm" "sing_a_song.xtm" "shader-tutorials/" "sampler.xtm" "raymarcher.xtm" "portmidi.xtm" "portmidi-output.xtm" "openvg.xtm" "gui.xtm" "granulator.xtm" "going-native.xtm" "gl-compatibility.xtm" "electrofunk.xtm" "convolution_reverb.xtm" "audio_player.xtm" ".DS_Store" "#spectrogram.xtm#" "#sampler.xtm#" "#raymarcher.xtm#" "#openvg.xtm#" "#electrofunk.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/examples/core/" (23632 41616 0 0) "xthread.xtm" "typeclasses.xtm" "topclock_metro.xtm" "scheduler.xtm" "polysynth.xtm" "osc_101.xtm" "nbody_lang_shootout.xtm" "mtaudio.xtm" "midi_synth.xtm" "fmsynth.xtm" "fasta_lang_shootout.xtm" "extempore_lang.xtm" "audio_101.xtm" "#scheduler.xtm#" "#nbody_lang_shootout.xtm#" "#mtaudio.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-graphic-hacks/DAY1/" (23641 34112 0 0) "day1.xtm" "day1.mov" ".DS_Store" "#day1.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-graphic-hacks/" (23634 45373 0 0) "DAY4/" "DAY3/" "DAY2/" "DAY1/" ".git/" ".DS_Store" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-graphic-hacks/DAY2/" (23632 42621 0 0) "day2.xtm" ".DS_Store" ".#day2.xtm" "#day2.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/songs/" (23632 17810 0 0) "walking_on_cloud.xtm" "The_Essence.xtm" "sample2.xtm" "sample.xtm" "record.xtm" "practice1.xtm" "lets_jass.xtm" "kuroneko.xtm" "creeping_shadow.xtm" "Avant-garde_Life.xtm" "andrew.xtm" "8_bits_or_less.xtm" ".git/" ".#andrew.xtm" "#walking_on_cloud.xtm#" "#The_Essence.xtm#" "#practice1.xtm#" "#lets_jass.xtm#" "#Avant-garde_Life.xtm#" "#andrew.xtm#" "#8_bits_or_less.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-build/examples/core/" (23526 57878 0 0) "xthread.xtm" "typeclasses.xtm" "topclock_metro.xtm" "synth.xtm" "scheduler.xtm" "petri-net.xtm" "osc_101.xtm" "nbody_lang_shootout.xtm" "mtaudio.xtm" "midi_synth.xtm" "fmsynth.xtm" "fasta_lang_shootout.xtm" "extempore_lang.xtm" "expr_problem.xtm" "covers.xtm" "audio_streams.xtm" "audio_101.xtm" "#audio_101.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/examples/contrib/" (23544 314 0 0) "word_count.xtm" "spectral_meter.xtm" "slideshow.xtm" "shadowmap.xtm" "shaderlight.xtm" "rtmidi.xtm" "qr-code.xtm" "portaudio.xtm" "pic/" "particles.xtm" "opencl.xtm" "nanomsg.xtm" "nanomsg-surveyor.xtm" "nanomsg-respondent.xtm" "nanomsg-request.xtm" "nanomsg-reply.xtm" "multilight.xtm" "mpi/" "mediaplayer.xtm" "lv2.xtm" "kinect_vg.xtm" "kinect_fire.xtm" "kinect.xtm" "horde3d_knight.xtm" "hidapi.xtm" "hid.xtm" "gstvideo_multi.xtm" "gstvideo.xtm" "gmp.xtm" "ghttp.xtm" "game-of-life.xtm" "game-of-life.vert" "game-of-life.frag" "fluids_2d.xtm" "fluid_dynamics.xtm" "fleet.xtm" "extempore-fortran/" "drawtext.xtm" "drawing.xtm" "datavis.xtm" "curl.xtm" "convolution.xtm" "ceph.xtm" "cas.xtm" "caas-example.xtm" "bullet.xtm" "80211.xtm" "#kinect_vg.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/examples/external/shader-tutorials/" (23546 33084 0 0) "triangle.xtm" "triangle.vert" "triangle.frag" "texture.xtm" "texture.vert" "texture.frag" "simple-triangle.xtm" "shadertoy.xtm" "shadertoy.vert" "shadertoy.frag" "shadertoy-flame.frag" "shadertoy-2.frag" "points.xtm" "points.vert" "points.frag" "particles.xtm" "particles.vert" "particles.frag" "heatmap.xtm" "heatmap.vert" "heatmap.frag" "geom-shader.xtm" "geom-shader.vert" "geom-shader.geom" "geom-shader.frag" "framebuffer.xtm" "framebuffer-triangle.vert" "framebuffer-triangle.frag" "framebuffer-post-process.vert" "framebuffer-post-process.frag" "arrows.xtm" "arrows.vert" "arrows.frag" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/libs/core/" (23572 32494 0 0) "xthread.xtm" "xobject.xtm" "vu-meter.xtm" "vaudio_dsp.xtm" "toplap_clock.xtm" "topclock.xtm" "test.xtm" "scheduler.xtm" "pcg-rng.xtm" "pc_ivl.xtm" "music.xtm" "math_ext.xtm" "math_ext-scm.xtm" "math.xtm" "instruments.xtm" "instruments-scm.xtm" "audiobuffer.xtm" "audio_dsp.xtm" "adt.xtm" "#instruments.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/libs/my/" (23596 58804 0 0) "trumpet.xtm" "synth.xtm" "shimmer_pad.xtm" "piano.xtm" "organ.xtm" "guitar.xtm" "fuzz_bass.xtm" "fmsynth.xtm" "epad.xtm" "drums.xtm" "churchorgan.xtm" "cello.xtm" "#piano.xtm#" "#guitar.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/libs/cello/" (23561 52807 0 0) "cello_Gs5_1_mezzo-piano_arco-normal.mp3" "cello_Gs4_1_mezzo-piano_arco-normal.mp3" "cello_Gs3_1_mezzo-piano_arco-normal.mp3" "cello_Gs2_1_mezzo-piano_arco-normal.mp3" "cello_G5_1_mezzo-piano_arco-normal.mp3" "cello_G4_1_mezzo-piano_arco-normal.mp3" "cello_G3_1_mezzo-piano_arco-normal.mp3" "cello_G2_1_mezzo-piano_arco-normal.mp3" "cello_Fs5_1_mezzo-piano_arco-normal.mp3" "cello_Fs4_1_mezzo-piano_arco-normal.mp3" "cello_Fs3_1_piano_arco-normal.mp3" "cello_Fs3_1_mezzo-piano_arco-normal.mp3" "cello_Fs2_1_piano_arco-normal.mp3" "cello_F5_1_mezzo-piano_arco-normal.mp3" "cello_F4_1_mezzo-piano_arco-normal.mp3" "cello_F3_1_mezzo-piano_arco-normal.mp3" "cello_F2_1_piano_arco-normal.mp3" "cello_E5_1_mezzo-piano_arco-normal.mp3" "cello_E4_1_mezzo-piano_arco-normal.mp3" "cello_E2_1_piano_arco-normal.mp3" "cello_Ds5_1_mezzo-piano_arco-normal.mp3" "cello_Ds4_1_mezzo-piano_arco-normal.mp3" "cello_Ds3_1_piano_arco-normal.mp3" "cello_Ds2_1_piano_arco-normal.mp3" "cello_D5_1_mezzo-piano_arco-normal.mp3" "cello_D4_1_mezzo-piano_arco-normal.mp3" "cello_D3_1_mezzo-piano_arco-normal.mp3" "cello_D2_1_mezzo-piano_arco-normal.mp3" "cello_Cs5_1_mezzo-piano_arco-normal.mp3" "cello_Cs4_1_mezzo-piano_arco-normal.mp3" "cello_Cs3_1_piano_arco-normal.mp3" "cello_Cs2_1_mezzo-piano_arco-normal.mp3" "cello_C6_1_mezzo-piano_arco-normal.mp3" "cello_C5_1_mezzo-piano_arco-normal.mp3" "cello_C4_1_mezzo-piano_arco-normal.mp3" "cello_C3_1_mezzo-piano_arco-normal.mp3" "cello_C2_1_mezzo-piano_arco-normal.mp3" "cello_B5_1_mezzo-piano_arco-normal.mp3" "cello_B4_1_mezzo-piano_arco-normal.mp3" "cello_B3_1_mezzo-piano_arco-normal.mp3" "cello_As5_1_mezzo-piano_arco-normal.mp3" "cello_As4_1_mezzo-piano_arco-normal.mp3" "cello_As3_1_mezzo-piano_arco-normal.mp3" "cello_As2_1_mezzo-piano_arco-normal.mp3" "cello_A5_1_mezzo-piano_arco-normal.mp3" "cello_A4_1_mezzo-piano_arco-normal.mp3" "cello_A3_1_mezzo-piano_arco-normal.mp3" "cello_A2_1_mezzo-piano_arco-normal.mp3" "../" "./")
+
+ ("/Users/YUYA/Program/extempore/examples/" (23545 31768 0 0) "sample1.xtm" "mysample.xtm" "external/" "demo.xtm" "core/" "contrib/" ".DS_Store" "#mysample.xtm#" "#demo.xtm#" "../" "./")
+
+ ("/Users/" (23515 63519 0 0) "YUYA/" "Shared/" "Guest/" ".localized" "../" "./")
+
+ ("/Users/YUYA/Program/extempore-build/examples/" (23490 15756 0 0) "sharedsystem/" "external/" "core/" "contrib/" "#demo.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/my-extempore/examples/core/" (22292 36862 0 0) "xthread.xtm" "typeclasses.xtm" "topclock_metro.xtm" "scheduler.xtm" "polysynth.xtm" "osc_101.xtm" "nbody_lang_shootout.xtm" "mtaudio.xtm" "midi_synth.xtm" "fmsynth.xtm" "fasta_lang_shootout.xtm" "extempore_lang.xtm" "audio_101.xtm" "../" "./")
+
+ ("/Users/YUYA/Program/my-extempore/examples/" (23488 55203 0 0) "mysample.xtm" "external/" "demo.xtm" "core/" "contrib/" ".DS_Store" ".#demo.xtm" "#mysample.xtm#" "#demo.xtm#" "../" "./")
+
+ ("/Users/YUYA/Program/my-extempore/" (23488 54013 0 0) "tests/" "runtime/" "libs/" "extras/" "extempore" "examples/" "demo.xtm" "assets/" ".DS_Store" "../" "./")
+
+ ("/private/" (22695 61054 0 0) "var/" "tmp/" "tftpboot/" "etc/" "../" "./")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t

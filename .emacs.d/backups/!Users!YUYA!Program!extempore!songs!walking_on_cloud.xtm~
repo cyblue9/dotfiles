@@ -1,0 +1,66 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;    Walking on cloud    ;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; set up
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (sys:load "libs/my/fmsynth.xtm")
+       (sys:load "libs/my/drums.xtm")
+       (sys:load "libs/core/pc_ivl.xtm"))
+
+(bind-val volume float 1.0)
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (* volume (+ (fmsynth in time chan dat)
+                 (drums in time chan dat)))))
+(dsp:set! dsp)
+
+;; melody
+(*metro* 'set-tempo 90)
+(define scale '(0 4 7))
+(define offset 0)
+(define right-hand
+  (lambda (beat dur)
+    (if (= 0 (modulo beat 8))
+        (set! offset (if (= offset 0) 24 0)))
+     (if (> (random) .0)
+         (play-note (*metro* beat)
+                    fmsynth
+                    (pc:quantize (+ 0 (random '(76 80 84 88 92))) scale)
+                    (+ 10 (cosr 35 20 7/3))
+                    (*metro* 'dur (random '(.25)) 0.3 8.0)))
+    (play-note (*metro* beat)
+               fmsynth
+               (pc:quantize (random '(48 54 60 66 72)) scale)
+               (+ 15 (cosr 45 20 7/3))
+               (*metro* 'dur (* (random '(0.5 1.0 1.5 2.0)) dur)))
+    (callback (*metro* (+ beat (* .5 dur))) 'right-hand (+ beat dur) dur)))
+
+(right-hand (*metro* 'get-beat 4) 1/4)
+
+(define hats
+  (lambda (beat dur)
+    (if (= 0 (modulo beat 8))
+        (play-note (*metro* beat) drums 49 65 (*metro* 'dur 70)))
+    (play-note (*metro* beat) drums (random '(42 44)) (+ 0 (cosr 30 50 (random '(7/3 5/2)))) (*metro* 'dur dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'hats (+ beat dur) dur)))
+
+(hats (*metro* 'get-beat 4) 1/4)
+
+(define kick
+  (lambda (beat dur)
+    (play-note (*metro* beat) drums 35 80 (*metro* 'dur dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'kick (+ beat dur) dur)))
+
+(kick (*metro* 'get-beat 4) 1/2)
+
+(define bassline
+  (lambda (beat ps ds)
+    (play fmsynth 48 60 (* (car ps) (car ds)) 1.0 0.5)
+    (callback (*metro* (+ beat (* 0.95 (car ds)))) 'bassline (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(bassline (*metro* 'get-beat 4) (list .25 .25 .6) '(3/2 1 3/2))

@@ -1,0 +1,148 @@
+;;
+;; extemporeでグラフィックをやるために、コードを読んだまとめ (2018-11-26-02:55)
+;;
+;; 参考文献
+;; [memononen/nanovg](https://github.com/memononen/nanovg/blob/master/src/nanovg.c)
+;; [NanoVG で HTML5 Canvas の力を C/C++ にも](https://qiita.com/shimacpyon/items/b6c0f2e031a4f4d6aefa)
+;; [２Ｄ描画について（Canvas 2D Context](https://hakuhin.jp/js/context2d.html#CONTEXT2D_05)
+;; [NanoVG のソースコードを読んでみた](http://lriki.hatenablog.com/entry/2015/05/25/230742)
+;; [Window reference](https://www.glfw.org/docs/3.3/group__window.html#ga61be47917b72536a148300f46494fc66)
+;; [OpenGL関数](https://qiita.com/jamaican/items/6dddb3d963bef179b24b)
+;;
+;; extemporeでグラフィックをやるために、`glfw3`と`nanovg`というライブラリを使っている。
+;; glfw3はグラフィックを描写するwindowを作るためのライブラリ
+;; nanovgはグラフィックを描画するためのライブラリ
+;;
+;; nanovgはCで書かれた(約4000行)、2Dグラフィックスのライブラリ
+;; APIはHTML5の描画関数と同じよう
+;; nanovgにはドキュメントがないが、コード中の各関数の説明を読めばだいたい使える。
+;; 分からないところは、HTML5について調べれば解決できそう(未確認)
+;; このファイルではxtlangにより、直接nanovgの関数を呼び出しているが、xtlangが型にうるさいためストレスが溜まる。
+;; しかし、もっと簡単に使うためのwrapperもあるよう。(/libs/contrib/openvg.xtm)
+;; Benさんの動画をみると↑を使っている
+;; windowを作成したり、初期化するところは、ほとんどおまじないのような感じで、理解してなくても描画はできる
+
+
+;;; openvg.xtm -- OpenVG-ish drawing example
+
+;; Author: Andrew Sorensen, Ben Swift
+;; Keywords: extempore
+;; Required dylibs: libglfw3, libnanovg
+
+;;; Commentary:
+
+;; This example used to be powered by ShivaVG, an OpenVG
+;; implementation which has now been unmaintained for several years.
+
+;; Recently, it has been updated to use the nanovg
+;; (https://github.com/memononen/nanovg) 2D hardware-accelerated
+;; drawing library. nanovg is *not* conformant with the OpenVG spec,
+;; but it's pretty close, and it's actively maintained, so is probably
+;; a good option going forward unless you need strict OpenVG
+;; compatibility.
+
+;;; Code:
+
+;; OpenGLにはウインドウを出す機能はないため、その他のライブラリを使用する必要があります。
+;; 色々あるが、extemporeではglfwを使っている
+(sys:load "libs/external/glfw3.xtm")
+
+(bind-val width float 1024.) ;; windowの横幅
+(bind-val height float 768.) ;; windowの縦幅
+
+;; windowを開くおまじない
+(bind-val window GLFWwindow*
+  (begin
+    (glfwSetErrorCallback (convert (get_native_fptr glfw_error_callback)))
+    (glfw_init_and_create_interaction_window (convert width) (convert height))))
+
+;; https://github.com/memononen/nanovg を読み込む
+(sys:load "libs/external/nanovg.xtm")
+
+(nvg_init) ;; init nanovg
+
+;; ```NVGcontext *context = nvgCreateGL2(width, height, NVG_ANTIALIAS);``` に相当(maybe)
+(bind-val vg NVGcontext* (nvg_create_context))
+;; おまじない(たぶん ```float pixelRatio = 1.0``` ではないか
+(bind-val pixel_ratio float (glfw_get_pixel_ratio window))
+
+;; background image
+(bind-val bg_paint NVGpaint*
+  (_nvgImagePattern vg
+                   0. 0.
+                   width height
+                   0.
+                   (nvgCreateImage vg "assets/images/image.png"  0)
+                   1.))
+
+(bind-func draw_frame
+  (let ((fill (NVGcolor 1.0 0.0 0.0 0.5)) ;; https://github.com/memononen/nanovg/blob/6fa3b3d51981ef696a2deb63fe50e1d9d62ff6a9/src/nanovg.h#L35
+        (stroke (NVGcolor 0.0 0.0 1.0 0.5))
+        (i 0.:f)
+        (frame 0))
+    (lambda ()
+      (nvgBeginFrame vg (convert width) (convert height) pixel_ratio) ;; nvg* の関数を呼び出す前にかならず nvgBeginFrame を呼び出す必要がある
+      (nvgResetTransform vg) ;; https://github.com/memononen/nanovg/blob/6fa3b3d51981ef696a2deb63fe50e1d9d62ff6a9/src/nanovg.h#L293
+      (if (not (null? bg_paint))
+          ;; draw background image
+          (begin
+            (_nvgFillPaint vg bg_paint)
+            (nvgBeginPath vg)
+            (nvgRect vg 0. 0. width height)
+            (nvgFill vg)))
+      ;; loop and draw the circles
+      (dotimes (i 200.0)
+        (nvgResetTransform vg) ;; なぜresetする必要があるのか
+        (nvgTranslate vg
+                      (+ (/ width 2.0) (* 200. (cos (* i 0.00025 (convert frame)))))
+                      (+ (/ height 2.0) (* 100. (tan (* 0.0001 i (convert frame))))))
+        (nvgBeginPath vg) ;; 図形ひとつ分の描画を開始する。
+        (nvgCircle vg 0. 0. 20.) ;; ```void nvgCircle(NVGcontext* ctx, float cx, float cy, float r)```
+        (tfill! fill (/ i 200.0) 0.0 (- 1.0 (/ i 200.0)) 0.5) ;; 塗りつぶす色を変える？
+        (_nvgFillColor vg fill)  ;; ```void nvgFillColor(NVGcontext* ctx, NVGcolor color)```
+        (nvgFill vg) ;;'''void nvgFill(NVGcontext* ctx)``` 実際の描画
+        (nvgStrokeWidth vg 10.) ;; 線の太さ？
+        (_nvgStrokeColor vg stroke) ;; 線の色
+        (nvgStroke vg)) ;; なぜか分からないがstrokeとfillは別に描写する
+      (set! frame (+ frame 1))
+      (nvgEndFrame vg)))) ;; 一連の描画を終了する
+
+
+(bind-func draw_circle
+  (lambda ()
+    (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+    (nvgBeginPath vg)
+    (nvgCircle vg (/ width 2.) (/ height 2.) 20.)
+    (_nvgFillColor vg (NVGcolor .5 .2 .5 1.))
+    (nvgFill vg)
+    (nvgEndFrame vg)))
+
+(bind-func draw_line
+  (lambda ()
+    (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+    (nvgBeginPath vg)
+    (nvgMoveTo vg (/ width 2.) 0.)
+    (nvgLineTo vg (/ width 2.) height)
+    (nvgStrokeWidth vg 5.)
+    (_nvgStrokeColor vg (NVGcolor .2 .2 .5 1.))
+    (nvgStroke vg)
+    (nvgEndFrame vg)))
+
+(bind-func nvg_draw_loop
+  (lambda (time:i64 delta_t:double)
+    (nvg_clear) ;; contextをclearしてそう
+    ;;(draw_frame) ;; 描画ですな
+    (draw_circle)
+    (draw_line)
+    (glfwPollEvents) ;; マウスの操作などのイベントを取り出し、それを記録します。この関数はプログラムを停止させないので、アニメーションのように連続して画面表示を更新する場合に使用します。
+    (glfwSwapBuffers window) ;; ダブルバッファリング、カラーバッファを入れ替える
+    (let ((next_time (+ time (convert (* 44100. delta_t)))))
+      (callback next_time nvg_draw_loop next_time delta_t))))
+
+(nvg_draw_loop (now) (/ 1. 30.))
+
+;; to stop the draw loop, eval this version of nvg_draw_loop
+;; (bind-func nvg_draw_loop
+;;   (lambda (time:i64 delta_t:double)
+;;     (println "nvg_draw_loop callback stopped")
+;;     #f))

@@ -1,0 +1,36 @@
+
+;; ----- smex-history -----
+(
+ shell
+ indent-region
+ mark-next-like-this
+ mark-previous-like-this
+ load-file
+ package-list-packages
+ package-install
+)
+
+;; ----- smex-data -----
+(
+ (quickurl . 2)
+ (switch-to-extempore . 1)
+ (describe-face . 3)
+ (indent-region . 14)
+ (load-file . 9)
+ (nyan-mode . 7)
+ (nyan-start-animation . 16)
+ (nyan-toggle-wavy-trail . 2)
+ (nyan-start-music . 3)
+ (customize . 1)
+ (package-install . 3)
+ (set-variable . 1)
+ (hanoi . 1)
+ (hanoi-unix . 1)
+ (eww . 1)
+ (comment-region . 2)
+ (slitex-mode . 2)
+ (package-list-packages . 1)
+ (mark-previous-like-this . 1)
+ (mark-next-like-this . 1)
+ (shell . 3)
+)

@@ -1,0 +1,167 @@
+;; DAY1
+
+;; * draw circle
+;; * draw line
+;; * draw moving line
+
+(sys:load "libs/external/glfw3.xtm")
+
+(bind-val width float 800.)
+(bind-val height float 800.)
+
+(bind-val window GLFWwindow*
+  (begin
+    (glfwSetErrorCallback (convert (get_native_fptr glfw_error_callback)))
+    (glfw_init_and_create_interaction_window (convert width) (convert height))))
+
+(sys:load "libs/external/nanovg.xtm")
+
+(nvg_init)
+
+(bind-val vg NVGcontext* (nvg_create_context))
+(bind-val pixel_ratio float (glfw_get_pixel_ratio window))
+
+(bind-func draw_circle
+  (lambda ()
+    (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+    (nvgBeginPath vg)
+    (nvgCircle vg (/ width 2.) (/ height 2.) 20.)
+    (_nvgFillColor vg (NVGcolor .5 .2 .5 1.))
+    (nvgFill vg)
+    (nvgEndFrame vg)))
+
+(bind-func draw_line
+  (let ((w 0.)
+        (h 0.))
+    (lambda ()
+      (if (> w width)
+          (set! w 0.)
+          (set! w (+ 3. w)))
+      (if (> h height)
+          (set! h 0.)
+          (set! h (+ 3. h)))
+      (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+      (nvgBeginPath vg)
+      (nvgMoveTo vg w 0.)
+      (nvgLineTo vg w height)
+      (nvgStrokeWidth vg 5.)
+      (_nvgStrokeColor vg (NVGcolor .2 .2 .5 1.))
+      (nvgStroke vg)
+      
+      (nvgBeginPath vg)
+      (nvgMoveTo vg 0. h)
+      (nvgLineTo vg width h)
+      (nvgStrokeWidth vg 5.)
+      (_nvgStrokeColor vg (NVGcolor .2 .2 .5 1.))
+      (nvgStroke vg)
+      (nvgEndFrame vg))))
+
+(bind-func draw_moving_line
+  (let* ((n:i64 (convert (/ width 10.) i64))
+         (w:float* (zalloc n))
+         (h:float* (zalloc n))
+         (i:i64 0))
+    (dotimes (i 0 n)
+      (begin
+        (pset! w i (i64tof (* i n)))
+        (pset! h i (i64tof (* i n)))))
+    (lambda ()
+      (dotimes (i 0 n)
+        (begin
+          (if (> (pref w i) width)
+              (pset! w i 0.)
+              (pset! w i (+ 1. (pref w i))))
+          (if (> (pref h i) height)
+              (pset! h i 0.)
+              (pset! h i (+ 1. (pref h i))))))
+      (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+      (dotimes (i 0 n)
+        (begin
+          (nvgBeginPath vg)
+          (nvgMoveTo vg (pref w i) 0.)
+          (nvgLineTo vg (pref w i) height)
+          (nvgStrokeWidth vg 5.)
+          (_nvgStrokeColor vg (NVGcolor .2 .2 .5 1.))
+          (nvgStroke vg)
+          
+          (nvgBeginPath vg)
+          (nvgMoveTo vg 0. (pref h i))
+          (nvgLineTo vg width (pref h i))
+          (nvgStrokeWidth vg 5.)
+          (_nvgStrokeColor vg (NVGcolor .2 .2 .5 1.))
+          (nvgStroke vg)))
+      (nvgEndFrame vg))))
+
+(bind-func draw_sample
+  (lambda ()
+    (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+    (nvgBeginPath vg)
+    (nvgCircle vg (/ width 2.) (/ height 2.) 20.)
+    (_nvgFillColor vg (NVGcolor .5 .2 .5 1.))
+    (nvgFill vg)
+    (nvgEndFrame vg)))
+
+
+(bind-func nvg_draw_loop
+  (lambda (time:i64 delta_t:double)
+    (nvg_clear)
+    ;;(draw_circle)
+    ;;(draw_moving_line)
+    (draw_sample)
+    (glfwSwapBuffers window)
+    (let ((next_time (+ time (convert (* 44100. delta_t)))))
+      (callback next_time nvg_draw_loop next_time delta_t))))
+
+(nvg_draw_loop (now) (/ 1. 30.))
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; helpful xtlang functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; setup
+
+(bind-func xtm_vg_create_context
+  (lambda ()
+    (nvg_create_context)))
+
+(bind-alias xtm_color NVGcolor)
+
+;; clear canvas
+
+(bind-func xtm_vg_clear
+  (lambda ()
+    (nvg_clear)))
+
+;; convenience functions for adding shapes to path
+
+(bind-func xtm_add_linei64
+  (lambda (path x1:i64 y1:i64 x2:i64 y2:i64)
+    (nvgMoveTo path (i64tof x1) (i64tof y1))
+    (nvgLineTo path (i64tof x2) (i64tof y2))))
+
+(bind-func xtm_add_linef
+  (lambda (path x1:float y1:float x2:float y2:float)
+    (nvgMoveTo path x1 y1)
+    (nvgLineTo path x2 y2)))
+
+(bind-poly xtm_add_line xtm_add_linei64)
+(bind-poly xtm_add_line xtm_add_linef)
+
+(bind-func bindfunc
+  (lambda (a)
+    (+ a 32)))
+
+(bind-func bindfunc_with_docstring
+  "bf+ds"
+  (lambda (a)
+    (+ a 32.)))
+
+(bind-poly bindfuncpoly bindfunc)
+(bind-poly bindfuncpoly bindfunc_with_docstring)

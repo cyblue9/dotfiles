@@ -1,0 +1,78 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                Avant-garde Life                 ;;
+;;                   2018/12/6                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (sys:load "libs/my/fmsynth.xtm")
+       (sys:load "libs/my/organ.xtm")
+       (sys:load "libs/my/epad.xtm")
+       (sys:load "libs/my/drums.xtm"))
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (+ (fmsynth in time chan dat)
+       (organ in time chan dat)
+       (epad in time chan dat)
+       (drums in time chan dat))))
+(dsp:set! dsp)
+
+(define scale (pc:scale 0 'blue-note))
+
+(define l3)
+(define l1
+  (lambda (beat p dur)
+    (play fmsynth p 60 dur)
+    ;;(play 1/2 fmsynth p 60 (- dur .5) .2)))
+    (callback (*metro* (+ beat (* .5 dur))) 'l1 (+ beat dur)
+              (if (< p 60)
+                   72
+                  (pc:quantize (- p 2) scale))
+                   dur)))
+
+(l1 (*metro* 'get-beat 4) 72 0.5)
+
+(define l2
+  (lambda (beat dur)
+    (if (> (random) .3)
+        (play fmsynth
+              (pc:quantize (cosr 60 10 1/4) scale)
+              (cosr 70 10 1/3)
+              dur))
+    (callback (*metro* (+ beat (* .5 dur))) 'l2 (+ beat dur) dur)))
+
+(l2 (*metro* 'get-beat 4) 0.5)
+
+(define l3
+  (lambda (beat dur)
+    (play drums *gm-kick* 100 dur)
+    (play 1/2 drums *gm-kick* 100 dur)
+    (play 1 drums *gm-pedal-hi-hat* 70 dur)
+    (callback (*metro* (+ beat (* .5 dur))) 'l3 (+ beat dur) dur)))
+
+(l3 (*metro* 'get-beat 4) 4)
+
+(define melody (make-list-with-proc 12 (lambda (p) (pc:random 72 84 '(3 5 10)))))
+
+(define l4
+  (lambda (beat ps dur)
+    (let ((vol (cosr 20 10 1/3))
+          (bmod (modulo beat 12)))
+      (map (lambda (p)
+             (play organ p (- 90 vol) dur)
+             (play epad  p (- 70 vol) dur))
+           (pc:make-chord 72 84 4 (pc:chord (cond ((< bmod 4) 3)
+                                                  ((< bmod 8) 5)
+                                                  ((< bmod 12) 10))
+                                             (cond ((< bmod 4) '^)
+                                                  ((< bmod 8) '^)
+                                                  ((< bmod 12) '7))))))
+    (callback (*metro* (+ beat (* .5 dur))) 'l4 (+ beat dur)
+              (rotate ps -1)
+              dur)))
+
+(l4 (*metro* 'get-beat 4) melody 1)
+

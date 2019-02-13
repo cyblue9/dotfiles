@@ -1,0 +1,56 @@
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (sys:load "libs/my/piano.xtm")
+       (sys:load "libs/my/drums.xtm"))
+
+(bind-func dsp:DSP
+  (λ (in time chan dat)
+    (+ (drums in time chan dat)
+       (piano in time chan dat))))
+(dsp:set! dsp)
+
+(define l1
+  (λ (beat ps ds)
+    (play piano (car ps) 120 (car ds))
+    (callback (*metro* (+ beat (* .5 (car ds)))) 'l1 (+ beat (car ds))
+              (rotate ps -1)
+              (rotate ds -1))))
+
+(l1 (*metro* 'get-beat 4) '(67 62 60 62) '(0.5))
+
+(define l2
+  (λ (beat dur)
+    (if (= 0 (modulo beat 2))
+        (begin
+          (map (λ (p)
+                 (play piano p 100 (/ dur 2)))
+               (pc:make-chord 72 84 3 (pc:chord 0 '-)))
+          (map (λ (p)
+                 (play 1 piano p 100 (/ dur 2)))
+               (pc:make-chord 48 60 3 (pc:chord 0 '-)))))
+    (callback (*metro* (+ beat (* .5 dur))) 'l2 (+ beat dur) dur)))
+
+(l2 (*metro* 'get-beat 4) 1)
+
+((define l3
+  (λ (beat dur)
+    (if (= 0 (modulo beat 4))
+        (begin
+          (play piano 100 140 dur)
+          (play 1 piano 100 120 dur)
+          (play 2 piano 100 100 dur)
+          (play 3 piano 100 80 dur)))
+    (callback (*metro* (+ beat (* .5 dur))) 'l3 (+ beat dur) dur)))
+
+(l3 (*metro* 'get-beat 4) 1)
+
+(define l4
+  (λ (beat ds)
+    (if (= 1 (modulo beat 2))
+        (play drums 31 120 (car ds)))
+    (if (= 4 (modulo beat 8))
+        (play 1/2 drums 31 120 (car ds)))
+    (callback (*metro* (+ beat (* .5 (car ds)))) 'l4 (+ beat (car ds))
+              (rotate ds -1))))
+
+(l4 (*metro* 'get-beat 4) '(0.5))

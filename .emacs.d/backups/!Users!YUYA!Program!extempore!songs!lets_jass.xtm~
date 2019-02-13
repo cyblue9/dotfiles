@@ -1,0 +1,62 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          Let's jass!          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(begin (sys:load "libs/core/instruments.xtm")
+       (sys:load "libs/external/instruments_ext.xtm")
+       (sys:load "libs/my/piano.xtm")
+       (sys:load "libs/my/trumpet.xtm")
+       (sys:load "libs/my/drums.xtm"))
+
+(bind-instrument bass subbass_note_c subbass_fx)
+(bind-func dsp:DSP
+  (let ((vol 1.0))
+    (lambda (in time chan dat)
+      (* vol (+ (drums in time chan dat)
+                (piano in time chan dat)
+                (trumpet in time chan dat)
+                (bass in time chan dat))))))
+(dsp:set! dsp)
+
+(define l1
+  (lambda (beat degree dur)
+    (let ((chord (pc:make-chord (random '(60)) (random '(72 72 72 72 84)) 4 (pc:diatonic 3 '- degree))))
+      (play bass (- (car chord) 12) 70 dur)
+      (map (lambda (p)
+             (play piano p (cosr 150 20 4/3) dur))
+           chord)
+      ;; (play piano (list-ref chord 0) (cosr 150 20 4/3) dur)
+      ;; (play 2/8 piano (list-ref chord 1) (cosr 150 20 4/3) dur)
+      ;; (play 4/8 piano (list-ref chord 2) (cosr 150 20 4/3) dur)
+      ;; (play 6/8 piano (list-ref chord 3) (cosr 150 20 4/3) dur)
+      (callback (*metro* (+ beat (* .5 dur))) 'l1 (+ beat dur)
+                (random (cdr (assoc degree '((i7 iv7 ii7)
+                                             (ii7 v7)
+                                             (iv7 v7 i7)
+                                             (v7 i7)))))
+                (random '(.5 .5 .25 .25 .25 .25))))))
+
+(l1 (*metro* 'get-beat 4) 'i7 0.5)
+
+(define l2
+  (lambda (beat dur)
+    (play 1/4 drums *gm-kick* (cosr 85 15 2/3) dur)
+    (play drums *gm-closed-hi-hat* (cosr 60 20 5/4) dur)
+    (playob 0 4 drums *gm-crash* (cosr 50 10 3/4) 2)
+    (playob 0 8 1/2 drums *gm-crash* (cosr 50 10 3/4) 2)
+    (playob 0 8 1 drums *gm-crash* (cosr 50 10 3/4) 2)
+    (callback (*metro* (+ beat (* .5 dur))) 'l2 (+ beat dur) dur)))
+
+(l2 (*metro* 'get-beat 4) .5)
+
+(define scale (pc:scale 10 'blue-note))
+
+(define l3
+  (lambda (beat dur)
+    (play trumpet (pc:random 48 72 scale) (random 100 130) dur)
+    (callback (*metro* (+ beat (* .5 dur))) 'l3 (+ beat dur)
+              (random '(.25 .25 .5 .5 1 1 1 2 2 2 4)))))
+
+(l3 (*metro* 'get-beat 4) 2)

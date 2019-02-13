@@ -1,0 +1,675 @@
+(bind-func f1
+  (let ((slot-func (lambda (x:i64) (+ x 1000))))
+    (lambda (in:i64)
+      (+ in 100))))
+
+(bind-func f2 
+  (lambda (fname:[i64,i64]*)
+    (let ((f (fname.slot-func:[i64,i64]*)))
+      (f 200)
+      )))
+
+(get-closure-code f1)
+
+(f1 10)
+(define hoge
+  (lambda (a)
+    (+ a 10)))
+
+(hoge 10)
+(get-closure-code hoge)
+
+(eval (f1_adhoc_W2k2NCxpNjRd.10))
+
+(eval (string->sexpr (string-append "(" "f10_adhoc_W2k2NCxpNjRd" "." (symbol->string (10)) ")")))
+
+(symbol? 1)
+(symbol->string (0))
+
+(bind-func f10
+  (lambda (x)
+    (+ x 10)))
+
+(f10 10)
+
+(define foo
+  (lambda args
+    (if (and (not (null? args))
+             (symbol? (car args)))
+        (if (equal? (car args) (quote xtlang))
+            (quote f10_adhoc_W2k2NCxpNjRd)
+            (if (null? (cdr args))
+                (eval (string->sexpr (string-append "(" "f10_adhoc_W2k2NCxpNjRd" "." (symbol->string (car args)) ")")))
+                (eval (append (string->sexpr (string-append "(" "f10_adhoc_W2k2NCxpNjRd" "." (symbol->string (car args)) ")")) (list (cadr args))))
+                )
+            )
+        (apply f10_adhoc_W2k2NCxpNjRd args))))
+
+(symbol? 10)
+(foo 10)
+
+(f10_adhoc_W2k2NCxpNjRd 10)
+(f10_adhoc_[i64,i64] 10)
+(get-closure-code f10)
+
+(get-closure-code f10_adhoc_W2k2NCxpNjRd)
+
+(quote 9)
+
+(bind-func osc_c ; osc_c is the same as last time
+  (lambda (phase)
+    (lambda (amp freq)
+      (let ((inc:SAMPLE (* 3.141592 (* 2.0 (/ freq 44100.0)))))
+        (set! phase (+ phase inc))
+        (* amp (sin phase))))))
+
+;; remember that the dsp closure is called for every sample
+;; also, let's add a type signature to the closure just because
+;; we can. DSP is short for [SAMPLE,SAMPLE,i64,i64,SAMPLE*]*
+
+(bind-func dsp:DSP
+  (let ((osc1 (osc_c 0.0))
+        (osc2 (osc_c 0.0))
+        (osc3 (osc_c 0.0)))
+    (lambda (in time channel data)
+      (cond ((= channel 1) 
+             (+ (osc1 0.5 220.0)
+                (osc2 0.5 350.0)))
+            ((= channel 0)
+             (osc3 0.5 210.0))
+            (else 0.0)))))
+
+(dsp:set! dsp)
+(sys:load "libs/core/instruments.xtm")
+(bind-instrument synth synth_note_c synth_fx)
+(bind-instrument fmsynth fmsynth_note_c fmsynth_fx)
+                 
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (synth in time chan dat)))
+
+(dsp:set! dsp)
+
+(play-note (now) synth (random 60 80) 80 (* .1 *second*))
+
+(dotimes (i 12)
+  (println 'modulo (+ i 60) 12 '=> (modulo (+ i 60) 12)))
+
+(sys:load "libs/core/pc_ivl.xtm")
+
+(pc:pc 74)
+(pc:quantize-list '(60 64 67) '(2 6 10))
+
+(sys:load "libs/core/adt.xtm")
+(+ 6e5 7i)
+(+ 7 8i)
+(bind-func xtlang_closure
+  (lambda (c:double d:i64)
+    (let ((result (* c (i64tod d))))
+      (printf "result = %f\n" result)
+      (round 7.5)
+      (if (> 3 8) (print "A"))
+      result)))
+(xtlang_closure 4.5 2)
+(bind-func squarer:[double,double]*
+  (lambda (x)
+    (* x x)))
+
+(bind-func test_apply:[double,[double,double]*,double]*
+  (lambda (f:[double,double]* x:double)
+    (f x)))
+
+(test_apply squarer 2.0) ;; this won't work
+(bind-func squarer:[double,double]*
+  (lambda (x)
+    (* x x)))
+
+(bind-func test_apply:[double,[double,double]*,double]*
+  (lambda (f:[double,double]* x:double)
+    (f x)))
+
+(test_apply squarer 2.0) ;; this won't work
+($ (test_apply squarer 2.0))
+
+(+ 60 1)
+(/ (round 8) 4)
+(real? 9.0)
+(rational? 9.0)
+(pc:make-chord 60.5 85.5 4 '(0 4 7 10))
+(pc:diatonic 0 '-geuuuuuuu 'iii)
+(pc:distance-of-chord '(60 64 67) '(0 3 7))
+(pc:scale-from-pc '(0 2 4 5 7 9 11))
+'('1)
+(define pc:from-intervals
+   (lambda (plst intervals)
+      (if (null? intervals)
+          (reverse plst)
+          (pc:from-intervals (cons (modulo (+ (car plst)
+                                              (car intervals))
+                                           12)
+                                   plst)
+                             (cdr intervals)))))
+(pc:from-intervals '(60 62 66) '(0 4 7 9))
+(pc:scale 60 'ionian)
+(ivl:transpose 60 '(0 2 4 5 7 9 11))
+(pc:transpose 60 '(2 4 6) '(0 2 7))
+
+(pc:chord->scale 60 'i)
+
+
+(define ivl:expand/contract
+   (lambda (lst factor)
+      (cons (car lst)
+            (let loop ((old (car lst))
+                       (l (cdr lst))
+                       (current (car lst))
+                       (newlst '()))
+               (if (null? l)
+                   (reverse newlst)
+                   (loop (car l)
+                         (cdr l)
+                         (+ current (* factor (- (car l) old)))
+                         (cons (real->integer (+ current (* factor (- (car l) old))))
+                               newlst)))))))
+(define pc:expand/contract
+   (lambda (lst factor pc)
+     (pc:quantize-list (ivl:expand/contract lst factor) pc)))
+
+
+(pc:expand/contract '(60 64 67) 2 '(0 4 7))
+(ivl:invert '(60 62 66) '() 60)
+
+(pc:invert '(60 62 67) '(4 8) 60)
+
+(apply '+ 60 'ionian)
+
+(pc:scale 60 'foo)
+(define pc:from-intervals
+   (lambda (plst intervals)
+      (if (null? intervals)
+          (reverse plst)
+          (pc:from-intervals (cons (modulo (+ (car plst)
+                                              (car intervals))
+                                           12)
+                                   plst)
+                             (cdr intervals)))))
+
+(pc:make-chord 60 66 3 '(8 10))
+(cl:remove -1 '(5 6 -1 -1 2))
+(equal -1 'f)
+(3 3) (3 7)
+(6 3 3) (7)
+(1 6 3 3)
+(equal '() 'NIL)
+
+(define pc:make-chord
+   (lambda (lower upper number pc)
+      (let ((chord '()))
+         (let loop ((l (round lower))
+                    (u (round upper))
+                    (n number)
+                    (p pc))
+           (if (< n 1)
+                (begin (println chord)
+                (map (lambda (x)
+                       (real->integer x))
+                     (cl:sort (cl:remove -1 chord) <))) ; lowest pitch to highest pitch remove -1s
+                (let* ((range (- u l))
+                       (gap (round (/ range n)))
+                       (pitch (pc:random l (+ l gap) p)))
+                   (if (< pitch 0) ; if new pitch is -1 try from whole range
+                       (set! chord (cons (pc:random lower upper p) chord))
+                       (set! chord (cons pitch chord)))
+                   (loop (+ l gap)
+                         u
+                         (- n 1)
+                         (if (> (length p) 1)
+                             (cl:remove (modulo (car chord) 12) p)
+                             pc))))))))
+
+
+
+
+(define pc:make-chord-fixed
+   (lambda (fix-point number pc . args)
+      (if (< number 1)
+          '()
+          (let* ((fixd (modulo fix-point 12))
+                 (place (if (null? args) 'bottom (car args)))
+                 (bass (- fix-point fixd))
+                 (chord (if (eq? place 'bottom) pc (reverse pc)))
+                 (v (map (lambda (pc) (abs (- fixd pc))) chord))
+                 (minim (apply min v))
+                 (start (- (length v) (length (member minim v)))))
+             (let loop ((i 0)
+                        (new-lst '())
+                        (bb bass)
+                        (lst (list-tail chord start)))
+                (if (< i number)
+                    (loop (+ i 1)
+                          (cons (+ bb (car lst)) new-lst)
+                          (if (null? (cdr lst))
+                              ((if (null? args) + -) bb 12)
+                              bb)
+                          (if (null? (cdr lst))
+                              chord
+                              (cdr lst)))
+                    (if (eq? place 'bottom)
+                        (cl:sort (reverse new-lst) <)
+                        (cl:sort new-lst <))))))))
+
+
+(pc:make-chord-fixed 60 3 '(0 3 7) 'top) 
+(pc:distance 60 '(2 5 9 11))
+(pc:closest-pc 60 '(2 5 9 10))
+(pc:closest-pitch '(0 4 8) '(62 67))
+(pc:find-closest '(60 62 65) '(0 4 7))
+(pc:find-closest '(60 62 66) '(4 9))
+(ivl:invert '(1 2 3 4 5 6) )
+(pc:move-chord '(60 64 67) '(0 3 6))
+(pc:quantize 60 '(0 2))
+(remove-first 0 '(0 0 2))
+
+
+
+(define pc:quantize
+   (lambda (pitch-in pc)
+      (let loop ((offset 0)
+                 (pitch (real->integer (round pitch-in))))
+         (cond ((pc:? (+ pitch offset) pc) (+ pitch offset))
+               ((pc:? (- pitch offset) pc) (- pitch offset))
+               ((< offset 7) (loop (+ offset 1) pitch))
+               (else (print-notification "no pc value to quantize to" pitch pc)
+                     #f)))))
+(pc:quantize 60 '(0))
+(pc:random 0 60 '(0))
+(range 9.3)
+
+(pc:degree 67 '(7 6 6))
+
+(pc:? 60 '(0 4 7))  ; C 60 64 67
+(pc:? 84 '(0 4 7))  ; C 80 84 87
+(pc:? 35 '(0 4 7))  ; B 
+(pc:? 79 '(0 4 7))  ; G
+
+                                        ; this chooess a C in any octave
+(pc:random 0 127 '(0))
+
+
+                                        ; this chooses any note from a D minor chord in octave 4
+(pc:random 60 73 '(2 5 9))
+
+;; this chooses any note from a C pantatonic octaves 3-6
+(pc:random 48 97 '(0 2 4 7 9))
+
+;; up 7 semitones or a perfect fifth
+(map (lambda (p)
+       (pc:? (+ p 7) '(0 2 4 5 7 9 11)))
+     (list 60 62 64 65 67 69 71))
+
+;; up 4 semitones or a major third
+(map (lambda (p)
+       (pc:? (+ p 4) '(0 2 4 5 7 9 11)))
+     (list 60 62 64 65 67 69 71))
+
+;; this gives us 62
+(pc:relative 60 1 '(0 2 4 5 7 9 11))
+
+(pc:relative 60 4 '(0 2 4 5 7 9 11))
+
+;; this gives us 57 (yes you can go backwards)
+(pc:relative 60 -2 '(0 2 4 5 7 9 11))
+
+
+;; define a melody
+(define melody (make-list-with-proc 4
+                                    (lambda (i)
+                                      (pc:random 60 73 '(0 2 4 5 7 9 11)))))
+
+(define (make-list-with-proc lth func)
+  (if (< lth 1)
+      '()
+      (let loop ((i 0) (lst '()))
+	      (if (>= i lth)
+	          lst
+	          (loop (+ i 1) (append lst (func i)))))))
+
+(define crazy-chord
+  (lambda (time)
+    (play-note time synth (pc:random 24 97 '(0 4 7 10 2 3 5 9 6 11 1)) 80 500)
+    (callback (+ time 1000) 'crazy-chord (+ time 5500))))
+
+(crazy-chord (now))
+
+;; C-major and repeat
+(define chords
+  (lambda (time)
+    (for-each (lambda (p)
+                (play-note time synth p 80 10000))
+              (pc:make-chord 60 72 3 '(0 4 7)))
+    (callback (+ time 10000) 'chords (+ time 11025))))
+
+(chords (now))
+
+;; I IV V
+(define chords
+  (lambda (time chord)
+    (for-each (lambda (p)
+                (play-note time synth p 80 10000))
+              (pc:make-chord 48 90 3 chord))
+    (callback (+ time 10000) 'chords (+ time 11025)
+              (if (> (random) .8)
+                  (random '((0 4 7) (5 9 0) (7 11 2)))
+                  chord))))
+
+(chords (now) '(0 4 7))
+
+(pc:make-chord 60 72 3 '(7 11 2))
+
+
+;; markov chord progression I IV V
+(define progression
+  (lambda (time chord)
+    (for-each (lambda (p)
+                (play-note time synth p 80 40000))
+              (pc:make-chord 60 73 3 chord))
+    (callback (+ time 40000) 'progression (+ time 44100)
+              (random (cdr (assoc chord '(((0 4 7) (5 9 0) (7 11 2))
+                                          ((5 9 0) (7 11 2) (0 4 7))
+                                          ((7 11 2) (0 4 7)))))))))
+
+(progression (now) '(0 4 7))
+(define progression)
+
+(cdr (assoc '(0 4 7) '(((0 4 7) (5 9 0) (7 11 2))
+                  ((5 9 0) (7 11 2) (0 4 7))
+                  (7 11 2) (0 4 7))))
+
+(pc:diatonic 0 '^ 'ii7)
+
+;; markov chord progression I ii iii IV V vi vii
+(define progression
+  (lambda (time degree)
+    (for-each (lambda (p)
+                (play-note time synth p 80 40000))
+              (pc:make-chord 48 77 5 (pc:diatonic 0 '^ degree)))
+    (callback (+ time 40000) 'progression (+ time 44100)
+              (random (cdr (assoc degree '((i iv v iii vi)
+                                           (ii v vii)
+                                           (iii vi)
+                                           (iv v ii vii i)
+                                           (v i vi)
+                                           (vii v i)
+                                           (vi ii))))))))
+
+(progression (now) 'i)
+
+;; create our organ instrument (again, analogue
+  ;; is defined in libs/core/instruments.xtm
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (+ (synth in time chan dat)
+       (fmsynth in time chan dat))))
+
+;; mordant
+(define play-note-mord
+  (lambda (time inst pitch vol duration pc)
+    (play-note (- time 5000) inst pitch (- vol 10) 2500)
+    (play-note (- time 2500) inst (pc:relative pitch 1 pc) (- vol 10) 2500)
+    (play-note time inst pitch vol (- duration 5000))))
+
+;; morkov chord progression I ii iii IV V vi vii
+(define progression
+  (lambda (time degree)
+    (let ((dur (if (member degree '(i iv)) 88200 44100)))
+      (for-each (lambda (p)
+                  (if (and (> p 70) (> (random) .7))
+                      (play-note-mord time synth p
+                                      (random 70 80)
+                                      (* .9 dur) '(0 2 4 5 7 9 11))
+                      (play-note time fmsynth p (random 70 80) (* .9 dur))))
+                (pc:make-chord 40 78 4 (pc:diatonic 0 '^ degree)))
+      (callback (+ time (* .9 dur)) 'progression (+ time dur)
+                (random (cdr (assoc degree '((i iv v iii vi)
+                                             (ii v vii)
+                                             (iii vi)
+                                             (iv v ii vii i)
+                                             (v i vi)
+                                             (vii v i)
+                                             (vi ii)))))))))
+
+(progression (now) 'i)
+
+;; (pc:scale 0 'ionian)
+;; (ionian . (2 2 1 2 2 2))
+(pc:diatonic 0 '^ 'v)
+
+
+(pc:relative 60 -1 '(0 2 4 5 7 9 11))
+
+;; Quintet
+(define progression
+  (lambda (time degree)
+    (let ((dur (if (member degree '(i iv)) (random (list 88200 (* 2 88200))) 44100)))
+      (for-each (lambda (p)
+                  (cond ((and (> (random) .7) (< dur 80000))
+                         (play-note time fmsynth p (random 60 70) (* .3 dur))
+                         (play-note (+ time (* .5 dur))
+                                    fmsynth
+                                    (pc:relative p (random '(-1 1))
+                                                 '(0 2 4 5 7 9 11))
+                                    (random 60 80)
+                                    (* .3 dur)))
+                        (else (play-note time
+                                         fmsynth
+                                         p
+                                         (random 60 70)
+                                         (* .7 dur)))))
+                (pc:make-chord 36 90 5 (pc:diatonic 0 '^ degree)))
+      (callback (+ time (* .8 dur)) 'progression (+ time dur)
+                (random (cdr (assoc degree '((i iv v iii vi)
+                                             (ii v vii)
+                                             (iii vi)
+                                             (iv v ii vii i)
+                                             (v i vi)
+                                             (vii v i)
+                                             (vi ii)))))))))
+
+(progression (now) 'i)           
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(define mlwp2
+  (lambda (n func ans)
+    (if (< n 1)
+	ans
+	(mlwp2 (- n 1) func (cons (func n) ans)))))
+(mlwp2 10000 (lambda (i) i) '())
+
+(define mlwp5
+  (lambda (n-st n-end func ans)
+    (if (>= n-st n-end)
+	ans
+	(cons (func n-st)
+	         (mlwp5 (+ n-st 1) n-end func ans)))))
+(mlwp5  0 100000 (lambda (i) i) '())
+
+(define (mlwp7 n func ans)
+  (if (< n 1)
+      '()
+      (let loop ((i 0))
+	(if (>= i n)
+	    ans
+	    (cons (func i) (loop (+ i 1)))))))
+(mlwp7 10000 (lambda (i) i) '())
+
+(define (mlwp8 n func)
+  (if (< n 1)
+      '()
+      (let loop ((i 0) (ans '()))
+         (if (>= i n)
+             ans
+             (cons (func i)
+                       (loop (+ i 1) ans))))))
+(mlwp8 10000 (lambda (i) i) '())
+
+(define (make-list-with-proc_improve lth func)
+   (if (< lth 1)
+       '()
+       (let loop ((i 0) (lst '()))
+    (if (>= i lth)
+        lst
+        (loop (+ i 1) (append lst (list (func i))))))))
+
+;;
+;;
+;; beat & tempo
+;;
+;;
+
+(sys:load "libs/core/instruments.xtm")
+(sys:load "libs/external/instruments_ext.xtm")
+
+
+(bind-instrument synth synth_note_c synth_fx)
+(bind-instrument fmsynth fmsynth_note_c fmsynth_fx)
+
+(bind-sampler drums sampler_note_hermite_c sampler_fx)
+(define drum-path "/Users/YUYA/Program/extempore/libs/drums/OH/")
+(set-sampler-index drums (string-append drum-path "kick2_sOH_F_1.wav") *gm-kick*0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatClosed_OH_F_20.wav") *gm-closed-hi-hat* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "crash1_OH_FF_6.wav") *gm-crash* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "cowbell_FF_9.wav") *gm-cowbell* 0 0 0 1)
+(set-sampler-index drums (string-append drum-path "hihatClosed_OH_F_20.wav") *gm-closed-hi-hat* 0 0 0 1)
+
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (+ (synth in time chan dat)
+       (fmsynth_fx in time chan dat)
+       (drums in time chan dat))))
+
+(dsp:set! dsp)
+
+
+;; beat loop at 120bpm
+(define drum-loop
+  (lambda (time dur)
+    (let ((d (* dur .5 *samplerate*)))
+      (play-note time drums *gm-cowbell* 80 d)
+      (callback (+ time (* .5 d)) 'drum-loop (+ time d)
+                (random (list (/ 1 3) 0.5 0.25))))))
+
+(drum-loop (now) 0.25)
+
+;; beat loop with tempo shift
+(define drum-loop
+  (lambda (time dur)
+    (let ((d (* dur (+ .5 (* .25 (cos (* 16 3.141592 time)))) *samplerate*)))
+      (play-note time drums *gm-cowbell* 80 d)
+      (callback (+ time (* .5 d)) 'drum-loop (+ time d)
+                (random (list 0.5))))))
+
+(drum-loop (now) 0.5)
+
+(define root 52)
+(pc:quantize (cosr (+ root 36) (cosr 5 3 1/2) 7/3) '(11 6 15))
+
+;; beat loop at 120bpm
+(define drum-loop)
+  (lambda (time dur)
+    (let ((d (* dur .5 *samplerate*)))
+      (play-note time drums *gm-cowbell* 80 d)
+      (callback (+ time (* .5 d)) 'drum-loop (+ time d)
+                (random (list (/ 1 3) 0.5 0.25))))))
+
+(drum-loop (now) 0.25)
+
+
+
+;; create a metronome starting at 120 bpm
+(define *metro* (make-metro 120))
+
+;; beat loop
+(define drum-loop)
+  (lambda (time duration)
+    (println time duration)
+    (play-note (*metro* time) drums *gm-cowbell* 80 (*metro* 'dur duration))
+    (callback (*metro* (+ time (* .5 duration))) 'drum-loop (+ time duration)
+              (random (list 1)))))
+
+(drum-loop (*metro* 'get-beat) 1)
+(*metro* 'dur 0.5)
+(println (*metro* (*metro* 'get-beat)) (now))
+(println (get-closure-code *metro*))
+
+(define *metro* (make-metro 60))
+
+;; a 2/8 3/8 2/8 cycle
+(define *metre* (make-metre '(2 3 2) 0.5))
+
+;; play first beat of each 'bar'
+(define metre-test
+  (lambda (time)
+    (if (*metre* time 1.0)
+        (play-note (*metro* time) drums *gm-cowbell* 80 10000))
+    (callback (*metro* (+ time 0.4)) 'metre-test (+ time 0.5))))
+
+(metre-test (*metro* 'get-beat 1.0))
+
+;; classic 2 against 3
+(define *metro* (make-metro 180))
+
+;; 3/8
+(define *metre1* (make-metre '(3) .5))
+;; 2/8
+(define *metre2* (make-metre '(2) .5))
+
+;; play first beat of each 'bar'
+(define metre-test
+  (lambda (time)
+    (if (*metre1* time 1.0)
+        (play-note (*metro* time) drums *gm-cowbell* 80 10000))
+    (if (*metre2* time 1.0)
+        (play-note (*metro* time) drums *gm-closed-hi-hat* 60 10000))
+    (callback (*metro* (+ time 0.4)) 'metre-test (+ time 0.5))))
+
+(metre-test (*metro* 'get-beat 1.0))
+
+;; messiaen drum kit
+(define *metro* (make-metro 70))
+(*metro* 'set-tempo 40)
+  
+(define *metre1* (make-metre '(2 3 4 3 2) .5))
+(define *metre2* (make-metre '(3 5 7 5 3) .5))
+
+;; play first beat of each 'bar'
+(define metre-test
+  (lambda (time)
+    (play-note (*metro* time) drums
+               (random (cons .8 *gm-closed-hi-hat*) (cons .2 *gm-crash*))
+               (+ 40 (* 20 (cos (* 2 3.141592 time))))
+               (random (cons .8 500) (cons .2 2000)))
+    (if (*metre1* time 1.0)
+        (begin (play-note (*metro* time) drums *gm-cowbell* 80 100000)
+               (play-note (*metro* time) drums *gm-kick* 80 100000)))
+    (if (*metre2* time 1.0)
+        (begin (play-note (*metro* time) drums *gm-cowbell* 80 100000)
+               (play-note (*metro* time) drums *gm-kick* 80 100000)))
+    (callback (*metro* (+ time 0.2)) 'metre-test (+ time 0.25))))
+
+(metre-test (*metro* 'get-beat 1.0))
+
+(random (cons .8 *gm-kick*) (cons .2 *gm-cowbell*))
+(cons .8 *gm-cowbell)
+
+
+(define test)
+  (lambda (time pitch)
+    (if (< pitch 110)
+    (begin (print pitch)
+    (play-note (*metro* time) drums pitch 140 44100)
+    (callback (*metro* (+ time 0.5)) 'test (+ time 1) (+ pitch 1))))))
+
+(test (*metro* 'get-beat 1.0) 0)

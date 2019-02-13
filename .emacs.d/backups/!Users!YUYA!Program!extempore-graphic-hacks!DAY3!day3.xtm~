@@ -1,0 +1,136 @@
+;; DAY2
+
+;; * draw moving circle
+;; * draw moving circles
+;; * harmony graphic and sound
+
+(sys:load "libs/external/glfw3.xtm")
+
+(bind-val width float 800.)
+(bind-val height float 800.)
+
+(bind-val window GLFWwindow*
+  (begin
+    (glfwSetErrorCallback (convert (get_native_fptr glfw_error_callback)))
+    (glfw_init_and_create_interaction_window (convert width) (convert height))))
+
+(sys:load "libs/external/nanovg.xtm")
+
+(nvg_init)
+
+(bind-val vg NVGcontext* (nvg_create_context))
+(bind-val pixel_ratio float (glfw_get_pixel_ratio window))
+
+(sys:load "libs/core/instruments.xtm")
+(sys:load "libs/external/instruments_ext.xtm")
+(sys:load "libs/my/fmsynth.xtm")
+
+(bind-func dsp:DSP
+  (lambda (in time chan dat)
+    (fmsynth in time chan dat)))
+(dsp:set! dsp)
+
+(bind-func move_circle
+  (let ((x:float 400.)
+        (y:float 400.)
+        (dx:float 10.)
+        (dy:float 15.)
+        (r:float 20.)
+        (ishit:i64 0))
+    (lambda ()
+      (set! ishit 0)
+      (set! x (+ x dx))
+      (set! y (+ y dy))
+      (if (<= height (+ y r))
+          (begin
+            (xtm_play_note (now) fmsynth 880.0 0.2 100 0 null)
+            (set! dy -15.))
+          0.0:float)
+      (if (>= 0.:float (- y r))
+          (begin
+            (xtm_play_note (now) fmsynth 440.0 0.2 100 0 null)
+            (set! dy 15.))
+          0.0:float)
+      (if (<= width (+ x r))
+          (begin
+            (xtm_play_note (now) fmsynth 660.0 0.2 100 0 null)
+            (set! dx -10.))
+          0.0:float)
+      (if (>= 0.:float (- x r))
+          (begin
+            (xtm_play_note (now) fmsynth 222.0 0.2 100 0 null)
+            (set! dx 10.))
+          0.0:float)
+      (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+      (nvgBeginPath vg)
+      (nvgCircle vg x y r)
+      (_nvgFillColor vg (NVGcolor .5 .2 .5 1.))
+      (nvgFill vg)
+      (nvgEndFrame vg)
+      ishit)))
+
+(bind-alias color <float,float,float,float>)
+(bind-alias point <float,float,float,float,float,color*>) ;; x, y, dx, dy, r, color
+(bind-func move_circles
+  (let* ((n:i64 10)
+         (points:point* (alloc n))
+        (i:i64 0))
+    (dotimes (i 0 n)
+      (let ((x:float  (random 0. 800.))
+            (y:float  (random 0. 800.))
+            (dx:float (random 0. 25.))
+            (dy:float (random 0. 25.))
+            (r:float  (random 15. 35.))
+            (color:color* (alloc)))
+        (tfill! color (random) (random) (random) (random .6 1.))
+        (tfill! (pref-ptr points i) x y dx dy r color)))
+    (lambda ()
+      (dotimes (i 0 n)
+        (let ((x:float  (tref (pref-ptr points i) 0))
+              (y:float  (tref (pref-ptr points i) 1))
+              (dx:float (tref (pref-ptr points i) 2))
+              (dy:float (tref (pref-ptr points i) 3))
+              (r:float  (tref (pref-ptr points i) 4))
+              (color:color* (tref (pref-ptr points i) 5))
+              (vol:float (/ r 10.)))
+          (set! x (+ x dx))
+          (set! y (+ y dy))
+        (if (<= height (+ y r))
+          (begin
+            (xtm_play_note (now) fmsynth 880.0 vol 100 0 null)
+            (tset! (pref-ptr points i) 3 (- 0. dy)))
+          0.0:float)
+        (if (>= 0.:float (- y r))
+          (begin
+            (xtm_play_note (now) fmsynth 440.0 vol 100 0 null)
+            (tset! (pref-ptr points i) 3 (- 0. dy)))
+          0.0:float)
+        (if (<= width (+ x r))
+            (begin
+              (xtm_play_note (now) fmsynth 660.0 vol 100 0 null)
+              (tset! (pref-ptr points i) 2 (- 0. dx)))
+          0.0:float)
+        (if (>= 0.:float (- x r))
+            (begin
+              (xtm_play_note (now) fmsynth 222.0 vol 100 0 null)
+              (tset! (pref-ptr points i) 2 (- 0. dx)))
+          0.0:float)
+        (nvgBeginFrame vg (convert width) (convert height) pixel_ratio)
+        (nvgBeginPath vg)
+        (nvgCircle vg x y r)
+        (_nvgFillColor vg (NVGcolor (tref color 0) (tref color 1) (tref color 2) (tref color 3)))
+        (nvgFill vg)
+        (nvgEndFrame vg)
+        (tset! (pref-ptr points i) 0 x)
+        (tset! (pref-ptr points i) 1 y))))))
+
+(bind-func nvg_draw_loop
+  (lambda (time:i64 delta_t:double)
+    (nvg_clear)
+    ;;(draw_circle)
+    (move_circles)
+    (glfwSwapBuffers window)
+    (let ((next_time (+ time (convert (* 44100. delta_t)))))
+      (callback next_time nvg_draw_loop next_time delta_t))))
+
+(nvg_draw_loop (now) (/ 1. 30.))
